@@ -26,14 +26,14 @@ function reducer(state, action) {
   }
 }
 
-function useWeather(regionCode) {
+function useWeather(coords) {
   const [state, dispatch] = useReducer(reducer, {
     status: 'idle',
     data: null,
   })
 
   const handleWeatherCallback = useCallback(async () => {
-    if (!regionCode) {
+    if (!coords) {
       return
     }
 
@@ -42,7 +42,7 @@ function useWeather(regionCode) {
     })
 
     try {
-      const data = await getWeatherInfo(regionCode)
+      const data = await getWeatherInfo(coords)
 
       dispatch({
         type: 'success',
@@ -54,11 +54,11 @@ function useWeather(regionCode) {
         payload: error,
       })
     }
-  }, [regionCode])
+  }, [coords])
 
   useEffect(() => {
     handleWeatherCallback()
-  }, [handleWeatherCallback, regionCode])
+  }, [handleWeatherCallback, coords])
 
   useInterval(() => {
     handleWeatherCallback()

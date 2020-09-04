@@ -1,15 +1,8 @@
-import parseHtml from './parseHtml'
-import queryWeatherInfo from './queryWeatherInfo'
+async function getWeatherInfo({ latitude, longitude }) {
+  const response = await fetch(`/api/weather?lat=${latitude}&lng=${longitude}`)
+  const data = await response.json()
 
-async function getWeatherInfo(regionCode) {
-  const response = await fetch(
-    `https://cors-anywhere.herokuapp.com/https://n.weather.naver.com/today/${regionCode}`
-  )
-  const html = await response.text()
-  const document = parseHtml(html)
-  const weatherInfo = queryWeatherInfo(document)
-
-  return weatherInfo
+  return data
 }
 
 export default getWeatherInfo

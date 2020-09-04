@@ -1,5 +1,5 @@
 import { useReducer, useEffect } from 'react'
-import { getGeolocation, getRegionCodeByCoords } from '../../helper'
+import { getGeolocation } from '../../helper'
 
 function reducer(state, action) {
   switch (action.type) {
@@ -40,13 +40,11 @@ function useGeolocation() {
 
     try {
       const coords = await getGeolocation()
-      const regionCode = await getRegionCodeByCoords(coords)
 
       dispatch({
         type: 'success',
         payload: {
           coords,
-          regionCode,
         },
       })
     } catch (error) {
@@ -63,7 +61,7 @@ function useGeolocation() {
 
   return {
     state,
-    regionCode: state.regionCode,
+    coords: state.coords,
     handleGeolocationCallback,
   }
 }

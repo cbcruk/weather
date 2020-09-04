@@ -5,8 +5,8 @@ import { Body, Footer } from './components'
 import * as styles from './style'
 
 function App() {
-  const { regionCode } = useGeolocation()
-  const { state: weatherState } = useWeather(regionCode)
+  const { coords } = useGeolocation()
+  const { state: weatherState } = useWeather(coords)
   const { state: selected, toggle } = useToggle()
 
   const {
