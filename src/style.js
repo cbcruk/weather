@@ -5,10 +5,21 @@ export const wrapper = css`
   flex-direction: column;
   height: 100vh;
   background-color: var(--color-background-day);
-  transition: background-color 0.3s;
+  transition: background-color 3s;
+  animation: none;
 
   &.is-night {
     background-color: var(--color-background-night);
+  }
+
+  &.is-loading {
+    background: linear-gradient(
+      270deg,
+      var(--color-background-day),
+      var(--color-background-night)
+    );
+    background-size: 400% 400%;
+    animation: gradient 30s ease infinite;
   }
 
   @supports (-webkit-touch-callout: none) {
