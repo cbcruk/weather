@@ -6,7 +6,7 @@ import * as styles from './style'
 
 function App() {
   const { coords } = useGeolocation()
-  const { state: weatherState } = useWeather(coords)
+  const { data: weatherData } = useWeather(coords)
   const { state: selected, toggle } = useToggle()
 
   const {
@@ -17,7 +17,7 @@ function App() {
     current,
     status,
     location,
-  } = weatherState.data || {}
+  } = weatherData || {}
 
   return (
     <div

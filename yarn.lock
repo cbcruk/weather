@@ -1011,7 +1011,7 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.10.2", "@babel/runtime@^7.10.3", "@babel/runtime@^7.3.1", "@babel/runtime@^7.5.1":
+"@babel/runtime@^7.10.2", "@babel/runtime@^7.10.3", "@babel/runtime@^7.3.1", "@babel/runtime@^7.5.1", "@babel/runtime@^7.5.5":
   version "7.11.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.11.2.tgz#f549c13c754cc40b87644b9fa9f09a6a95fe0736"
   integrity sha512-TeWkU52so0mPtDcaCTxNBI/IHiz0pZgr8VEFqXFtZWpYD08ZB6FaSwVAS8MKRQAP3bYKiVjwysOJgMFY28o6Tw==
@@ -8839,6 +8839,13 @@ react-is@^16.12.0, react-is@^16.8.1, react-is@^16.8.4:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
+
+react-query@^2.17.2:
+  version "2.17.2"
+  resolved "https://registry.yarnpkg.com/react-query/-/react-query-2.17.2.tgz#d9fd7299eb7bef388ffe8c314c5fa84928ca7af0"
+  integrity sha512-VB3SU9rJQkumEJQF3z0ZzPGdxPz6WEs0Q5CB4gEk/jUp3u3vWd7di6LJJ7gD0uAZs+yiooXbtKNTGnLg9NPrew==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
 
 react-scripts@3.4.3:
   version "3.4.3"
