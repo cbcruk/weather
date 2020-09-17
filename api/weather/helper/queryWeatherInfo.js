@@ -1,23 +1,23 @@
+function toInteger(element) {
+  return parseInt(element.textContent.replace(/\D/g, ''), 10)
+}
+
 function queryWeatherInfo(document) {
   const weatherArea = document.querySelector('.today_weather')
+  const weeklyArea = document.querySelector('#weekly')
   const locationName = document.querySelector('.location_name')
-  const [
-    current,
-    highestTemperature,
-    lowestTemperature,
-    sensibleTemperature,
-    rainfall
-  ] = [
+  const [current, sensibleTemperature, rainfall] = [
     weatherArea.querySelector('.current'),
-    weatherArea.querySelector('.degree_height'),
-    weatherArea.querySelector('.degree_low'),
-    weatherArea.querySelector('.degree_feel'),
-    weatherArea.querySelector('.link_rainfall')
-  ].map((element) => parseInt(element.textContent.replace(/\D/g, ''), 10))
+    weatherArea.querySelector('.desc_feeling'),
+    weatherArea.querySelector('.desc_rainfall'),
+  ].map((element) => toInteger(element))
+  const { childNodes: temperatureNodes } = weeklyArea.querySelector(
+    '.today .temperature'
+  )
   const [location, summary, status] = [
     locationName,
-    weatherArea.querySelector('.summary').childNodes[0],
-    weatherArea.querySelector('.weather')
+    weatherArea.querySelector('.summary').childNodes[2],
+    weatherArea.querySelector('.weather'),
   ].map((element) => element.textContent.trim())
   const iconElement = weatherArea.querySelector('.ico')
   const icon = iconElement.dataset.ico
@@ -26,14 +26,14 @@ function queryWeatherInfo(document) {
   return {
     location,
     current,
-    highestTemperature,
-    lowestTemperature,
+    lowestTemperature: toInteger(temperatureNodes[1]),
+    highestTemperature: toInteger(temperatureNodes[4]),
     sensibleTemperature,
     summary,
     status,
     rainfall,
     icon,
-    isNight
+    isNight,
   }
 }
 
