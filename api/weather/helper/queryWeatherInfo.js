@@ -16,7 +16,7 @@ function queryWeatherInfo(document) {
   )
   const [location, summary, status] = [
     locationName,
-    weatherArea.querySelector('.summary').childNodes[2],
+    weatherArea.querySelector('.summary'),
     weatherArea.querySelector('.weather'),
   ].map((element) => element.textContent.trim())
   const iconElement = weatherArea.querySelector('.ico')
