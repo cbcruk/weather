@@ -6,10 +6,9 @@ function queryWeatherInfo(document) {
   const weatherArea = document.querySelector('.today_weather')
   const weeklyArea = document.querySelector('#weekly')
   const locationName = document.querySelector('.location_name')
-  const [current, sensibleTemperature, rainfall] = [
+  const [current, sensibleTemperature] = [
     weatherArea.querySelector('.current'),
-    weatherArea.querySelector('.desc_feeling'),
-    weatherArea.querySelector('.desc_rainfall'),
+    weatherArea.querySelector('.desc:nth-of-type(3)'),
   ].map((element) => toInteger(element))
   const { childNodes: temperatureNodes } = weeklyArea.querySelector(
     '.today .temperature'
@@ -31,7 +30,6 @@ function queryWeatherInfo(document) {
     sensibleTemperature,
     summary,
     status,
-    rainfall,
     icon,
     isNight,
   }
