@@ -1,5 +1,5 @@
 function toInteger(element) {
-  return parseInt(element.textContent.replace(/\D/g, ''), 10)
+  return parseInt(element.textContent.replace(/\D$/g, ''), 10)
 }
 
 function queryWeatherInfo(document) {
@@ -7,7 +7,7 @@ function queryWeatherInfo(document) {
   const weeklyArea = document.querySelector('#weekly')
   const locationName = document.querySelector('.location_name')
   const [current, sensibleTemperature] = [
-    weatherArea.querySelector('.current'),
+    weatherArea.querySelector('.current').childNodes[1],
     weatherArea.querySelector('.desc:nth-of-type(3)'),
   ].map((element) => toInteger(element))
   const { childNodes: temperatureNodes } = weeklyArea.querySelector(
