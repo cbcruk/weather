@@ -9,12 +9,13 @@ function Footer({
   current,
   status,
   location,
-  selected
+  selected,
+  children,
 }) {
   const style = useSpring({
     from: { opacity: 0 },
     opacity: selected ? 1 : 0,
-    config: { duration: 1000 }
+    config: { duration: 1000 },
   })
 
   return (
@@ -25,9 +26,10 @@ function Footer({
       <div className={styles.status}>
         {status}
         <span className={styles.temperature}>
-          {highestTemperature}°—{lowestTemperature}°
+          {lowestTemperature}°—{highestTemperature}°
         </span>
       </div>
+      {children}
     </animated.div>
   )
 }

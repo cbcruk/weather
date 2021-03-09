@@ -1,12 +1,24 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
 import './style.css'
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: false,
+      refetchOnWindowFocus: true,
+    },
+  },
+})
+
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
   </React.StrictMode>,
   document.getElementById('root')
 )

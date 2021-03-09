@@ -1,12 +1,11 @@
-import fetch from 'node-fetch'
+import axios from 'axios'
 
 async function getRegionCodeByCoords({ lat, lng }) {
-  const response = await fetch(
+  const { data } = await axios.get(
     `https://n.weather.naver.com/api/naverRgnCatForCoords?lat=${lat}&lng=${lng}`
   )
-  const { regionCode } = await response.json()
 
-  return regionCode
+  return data.regionCode
 }
 
 export default getRegionCodeByCoords

@@ -1,23 +1,24 @@
 import React from 'react'
-import { cx } from 'emotion'
+import { cx } from '@emotion/css'
+import { LineChart, Line, ResponsiveContainer } from 'recharts'
 import { useGeolocation, useToggle, useWeather } from './hooks'
 import { Body, Footer } from './components'
 import * as styles from './style'
 
 function App() {
   const { coords } = useGeolocation()
-  const { data: weatherData } = useWeather(coords)
+  const { data } = useWeather(coords)
   const { state: selected, toggle } = useToggle()
 
+  if (!data) {
+    return null
+  }
+
   const {
-    isNight,
-    icon,
-    lowestTemperature,
-    highestTemperature,
-    current,
-    status,
-    location,
-  } = weatherData || {}
+    city: { name },
+    current: { isNight, main, weather },
+    hourly,
+  } = data
 
   return (
     <div
@@ -29,15 +30,32 @@ function App() {
       ])}
       onClick={toggle}
     >
-      <Body icon={icon} isNight={isNight} selected={selected} />
+      <Body icon={weather.icon} isNight={isNight} selected={selected} />
       <Footer
-        lowestTemperature={lowestTemperature}
-        highestTemperature={highestTemperature}
-        current={current}
-        status={status}
-        location={location}
+        lowestTemperature={main.tempMin}
+        highestTemperature={main.tempMax}
+        current={main.temp}
+        status={weather.description}
+        location={name}
         selected={selected}
-      />
+      >
+        <ResponsiveContainer width="100%" height={100}>
+          <LineChart
+            margin={{
+              top: 50,
+            }}
+            data={hourly.slice(0, 12)}
+          >
+            <Line
+              type="monotone"
+              dataKey="main.temp"
+              stroke="#fff"
+              strokeWidth={2}
+              dot={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </Footer>
     </div>
   )
 }
