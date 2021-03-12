@@ -11,6 +11,7 @@
     "@types/lodash": "^4.14.168",
     "dayjs": "^1.10.4",
     "emotion": "^11.0.0",
+    "jotai": "^0.15.2",
     "lodash": "^4.17.21",
     "next": "^10.0.8",
     "react": "^17.0.1",
@@ -19,8 +20,7 @@
     "react-scripts": "4.0.3",
     "react-spring": "^8.0.27",
     "recharts": "^2.0.8",
-    "suncalc": "^1.8.0",
-    "zustand": "^3.3.3"
+    "suncalc": "^1.8.0"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,61 +1,30 @@
 import React from 'react'
+import { useAtom } from 'jotai'
 import { cx } from '@emotion/css'
-import { LineChart, Line, ResponsiveContainer } from 'recharts'
-import { useGeolocation, useToggle, useWeather } from './hooks'
+import { fetchWeatherAtom } from './atom/weather'
+import { toggleAtom } from './atom/toggle'
 import { Body, Footer } from './components'
 import * as styles from './style'
 
 function App() {
-  const { coords } = useGeolocation()
-  const { data } = useWeather(coords)
-  const { state: selected, toggle } = useToggle()
-
-  if (!data) {
-    return null
-  }
-
+  const [weatherData] = useAtom(fetchWeatherAtom)
+  const [, toggle] = useAtom(toggleAtom)
   const {
-    city: { name },
-    current: { isNight, main, weather },
-    hourly,
-  } = data
+    current: { isNight },
+  } = weatherData
 
   return (
     <div
       className={cx([
         styles.wrapper,
         {
-          'is-night': isNight,
+          [styles.isNight]: isNight,
         },
       ])}
-      onClick={toggle}
+      onClick={() => toggle((prev) => !prev)}
     >
-      <Body icon={weather.icon} isNight={isNight} selected={selected} />
-      <Footer
-        lowestTemperature={main.tempMin}
-        highestTemperature={main.tempMax}
-        current={main.temp}
-        status={weather.description}
-        location={name}
-        selected={selected}
-      >
-        <ResponsiveContainer width="100%" height={100}>
-          <LineChart
-            margin={{
-              top: 50,
-            }}
-            data={hourly.slice(0, 12)}
-          >
-            <Line
-              type="monotone"
-              dataKey="main.temp"
-              stroke="#fff"
-              strokeWidth={2}
-              dot={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </Footer>
+      <Body />
+      <Footer />
     </div>
   )
 }

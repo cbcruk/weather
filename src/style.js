@@ -8,21 +8,21 @@ export const wrapper = css`
   transition: background-color 3s;
   animation: none;
 
-  &.is-night {
-    background-color: var(--color-background-night);
-  }
-
-  &.is-loading {
-    background: linear-gradient(
-      270deg,
-      var(--color-background-day),
-      var(--color-background-night)
-    );
-    background-size: 400% 400%;
-    animation: gradient 30s ease infinite;
-  }
-
   @supports (-webkit-touch-callout: none) {
     height: -webkit-fill-available;
   }
+`
+
+export const isNight = css`
+  background-color: var(--color-background-night);
+`
+
+export const isLoading = css`
+  background: linear-gradient(
+    270deg,
+    var(--color-background-day),
+    var(--color-background-night)
+  );
+  background-size: 400% 400%;
+  animation: gradient 30s ease infinite;
 `

@@ -1,24 +1,17 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom'
-import { QueryClient, QueryClientProvider } from 'react-query'
+import { Provider } from 'jotai'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
 import './style.css'
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: false,
-      refetchOnWindowFocus: true,
-    },
-  },
-})
-
 ReactDOM.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <App />
-    </QueryClientProvider>
+    <Provider>
+      <Suspense fallback={null}>
+        <App />
+      </Suspense>
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 )
