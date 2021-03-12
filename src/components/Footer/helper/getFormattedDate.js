@@ -4,7 +4,7 @@ import 'dayjs/locale/ko'
 dayjs.locale('ko')
 
 function getFormattedDate() {
-  const result = dayjs().format('dddd—M월d일')
+  const result = dayjs().format('dddd—M월D일')
 
   return result
 }
