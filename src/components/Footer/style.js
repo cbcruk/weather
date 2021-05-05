@@ -23,7 +23,7 @@ export const date = css`
 `
 
 export const current = css`
-  font-size: 144px;
+  font-size: 96px;
   font-weight: 900;
 `
 
