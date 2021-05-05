@@ -18,6 +18,9 @@ export const isNight = css`
 `
 
 export const isLoading = css`
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
   background: linear-gradient(
     270deg,
     var(--color-background-day),

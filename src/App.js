@@ -2,13 +2,13 @@ import React from 'react'
 import { useAtom } from 'jotai'
 import { cx } from '@emotion/css'
 import { toggleAtom } from './atom/toggle'
+import { nightAtom } from './atom/sunCalc'
 import { Body, Footer } from './components'
 import * as styles from './style'
-import { nightAtom } from './atom/sunCalc'
 
 function App() {
-  const [, toggle] = useAtom(toggleAtom)
   const [isNight] = useAtom(nightAtom)
+  const [, toggle] = useAtom(toggleAtom)
 
   return (
     <div
@@ -18,7 +18,10 @@ function App() {
           [styles.isNight]: isNight,
         },
       ])}
-      onClick={() => toggle((prev) => !prev)}
+      onClick={(e) => {
+        console.log(e.target)
+        toggle((prev) => !prev)
+      }}
     >
       <Body />
       <Footer />

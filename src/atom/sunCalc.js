@@ -7,14 +7,14 @@ import { coordsAtom } from './coords'
 dayjs.extend(isSameOrAfter)
 
 const sunCalcAtom = atom((get) => {
-  const { latitude, longitude } = get(coordsAtom)
+  const coords = get(coordsAtom)
 
-  return sunCalc.getTimes(new Date(), latitude, longitude)
+  return sunCalc.getTimes(new Date(), coords.latitude, coords.longitude)
 })
 
 export const nightAtom = atom((get) => {
-  const sunset = get(sunCalcAtom)
-  const isNight = dayjs().isSameOrAfter(dayjs(sunset))
+  const result = get(sunCalcAtom)
+  const isNight = dayjs().isSameOrAfter(dayjs(result.sunset))
 
   return isNight
 })
