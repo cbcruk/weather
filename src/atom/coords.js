@@ -8,6 +8,12 @@ export const coordsAtom = atom(
   }
 )
 
+export const permissionAtom = atom(async () => {
+  const result = await navigator.permissions.query({ name: 'geolocation' })
+
+  return result.state
+})
+
 export const fetchCoordsAtom = atom(
   (get) => get(coordsAtom),
   async (_get, set) => {
