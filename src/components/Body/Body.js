@@ -1,21 +1,16 @@
 import { useAtom } from 'jotai'
 import React from 'react'
 import { useSpring, animated } from 'react-spring'
+import { nightAtom } from '../../atom/sunCalc'
 import { toggleAtom } from '../../atom/toggle'
-import { weatherAtom } from '../../atom/weather'
+import { fetchWeatherAtom } from '../../atom/weather'
 import { Icon } from './components'
 import * as styles from './style'
 
 function Body() {
-  const [
-    {
-      current: {
-        isNight,
-        weather: { icon },
-      },
-    },
-  ] = useAtom(weatherAtom)
+  const [{ weather }] = useAtom(fetchWeatherAtom)
   const [isSelected] = useAtom(toggleAtom)
+  const [isNight] = useAtom(nightAtom)
   const style = useSpring({
     from: { opacity: 1, filter: 'blur(0px)' },
     opacity: isSelected ? 0.5 : 1,
@@ -25,7 +20,7 @@ function Body() {
 
   return (
     <animated.div className={styles.wrapper} style={style}>
-      {icon && <Icon icon={icon} isNight={isNight} />}
+      <Icon code={weather.today.weatherCode} isNight={isNight} />
     </animated.div>
   )
 }

@@ -1,9 +1,10 @@
 import { useAtom } from 'jotai'
 import { Line, LineChart, ResponsiveContainer } from 'recharts'
-import { hourlyAtom } from '../../atom/weather'
+import { fetchWeatherAtom } from '../../atom/weather'
 
 function Chart() {
-  const [hourly] = useAtom(hourlyAtom)
+  const [{ weather }] = useAtom(fetchWeatherAtom)
+  const { weekly } = weather
 
   return (
     <ResponsiveContainer width="100%" height={100}>
@@ -11,11 +12,11 @@ function Chart() {
         margin={{
           top: 50,
         }}
-        data={hourly}
+        data={weekly}
       >
         <Line
           type="monotone"
-          dataKey="main.temp"
+          dataKey="maxTemperature"
           stroke="#fff"
           strokeWidth={2}
           dot={false}

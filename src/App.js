@@ -1,17 +1,14 @@
 import React from 'react'
 import { useAtom } from 'jotai'
 import { cx } from '@emotion/css'
-import { fetchWeatherAtom } from './atom/weather'
 import { toggleAtom } from './atom/toggle'
 import { Body, Footer } from './components'
 import * as styles from './style'
+import { nightAtom } from './atom/sunCalc'
 
 function App() {
-  const [weatherData] = useAtom(fetchWeatherAtom)
   const [, toggle] = useAtom(toggleAtom)
-  const {
-    current: { isNight },
-  } = weatherData
+  const [isNight] = useAtom(nightAtom)
 
   return (
     <div
