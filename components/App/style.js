@@ -4,7 +4,8 @@ export const wrapper = css`
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: var(--color-background-day);
+  min-height: 100vh;
+  background-color: var(--color-background-afternoon);
   transition: background-color 3s;
   animation: none;
 
@@ -15,6 +16,10 @@ export const wrapper = css`
 
 export const isNight = css`
   background-color: var(--color-background-night);
+`
+
+export const isNoon = css`
+  background-color: var(--color-background-afternoon);
 `
 
 export const isLoading = css`

@@ -1,9 +1,9 @@
 import { useAtom } from 'jotai'
 import { Line, LineChart, ResponsiveContainer } from 'recharts'
-import { fetchWeatherAtom } from '../../atom/weather'
+import { weatherAtom } from '../../atom/weather'
 
 function Chart() {
-  const [{ weather }] = useAtom(fetchWeatherAtom)
+  const [{ weather }] = useAtom(weatherAtom)
   const { weekly } = weather
 
   return (

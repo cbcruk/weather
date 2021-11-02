@@ -1,6 +1,7 @@
 :root {
-  --color-background-day: #f8c6cf;
+  --color-background-morning: #f8c6cf;
   --color-background-night: #455681;
+  --color-background-afternoon: #a793ac;
   --color-text: #fffeff;
 }
 
@@ -26,4 +27,5 @@
 
 html {
   font-family: 'Noto Sans KR', sans-serif;
+  background-color: var(--color-background-afternoon);
 }

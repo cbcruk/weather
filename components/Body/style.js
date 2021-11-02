@@ -7,6 +7,7 @@ export const wrapper = css`
   justify-content: center;
   flex: 1;
   position: relative;
+  z-index: 10;
   padding: 30px;
   font-size: 12px;
   color: #fff;

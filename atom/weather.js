@@ -1,6 +1,7 @@
 import { atom } from 'jotai'
 import { atomWithQuery } from 'jotai/query'
 import { getWeatherInfo } from '../helper'
+import { isSSR } from '../helper/ssr'
 import { coordsAtom } from './coords'
 
 export const fetchWeatherAtom = atomWithQuery((get) => {
@@ -8,11 +9,16 @@ export const fetchWeatherAtom = atomWithQuery((get) => {
     queryKey: ['weather', get(coordsAtom)],
     async queryFn({ queryKey: [, coords] }) {
       const response = await getWeatherInfo(coords)
-
       return response
     },
     refetchInterval: 1000 * 60 * 5,
   }
 })
 
-export const weatherAtom = atom((get) => get(fetchWeatherAtom))
+export const weatherAtom = atom((get) => {
+  if (isSSR) {
+    return null
+  }
+
+  return get(fetchWeatherAtom)
+})

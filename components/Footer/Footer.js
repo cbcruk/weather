@@ -3,12 +3,12 @@ import React from 'react'
 import { useSpring, animated } from 'react-spring'
 import { fetchCoordsAtom } from '../../atom/coords'
 import { toggleAtom } from '../../atom/toggle'
-import { fetchWeatherAtom } from '../../atom/weather'
+import { weatherAtom } from '../../atom/weather'
 import { getFormattedDate, getFormattedTemperature } from './helper'
 import * as styles from './style'
 
-function Footer({ children }) {
-  const [{ geo, weather }] = useAtom(fetchWeatherAtom)
+function Footer() {
+  const [{ geo, weather }] = useAtom(weatherAtom)
   const [isSelected] = useAtom(toggleAtom)
   const [, compute] = useAtom(fetchCoordsAtom)
   const style = useSpring({
@@ -16,12 +16,8 @@ function Footer({ children }) {
     opacity: isSelected ? 1 : 0,
     config: { duration: 1000 },
   })
-  const {
-    temperature,
-    compareTemperature,
-    minTemperature,
-    maxTemperature,
-  } = weather.today
+  const { temperature, compareTemperature, minTemperature, maxTemperature } =
+    weather.today
 
   return (
     <animated.div className={styles.wrapper} style={style}>
@@ -54,7 +50,6 @@ function Footer({ children }) {
           {minTemperature}°—{maxTemperature}°
         </span>
       </div>
-      {children}
     </animated.div>
   )
 }
