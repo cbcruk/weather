@@ -1,5 +1,5 @@
-async function getWeatherInfo({ latitude, longitude }) {
-  const response = await fetch(`/api/weather?lat=${latitude}&lng=${longitude}`)
+async function getWeatherInfo() {
+  const response = await fetch('/api/weather')
   const data = await response.json()
 
   return data

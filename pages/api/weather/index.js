@@ -35,16 +35,26 @@ async function getWeather({ coords, address }) {
   return weather
 }
 
+export async function getData({ latitude, longitude }) {
+  const coords = [longitude, latitude].join(',')
+  const geo = await getGeo(coords)
+  const weather = await getWeather({ coords, address: geo.address })
+
+  return {
+    geo,
+    weather,
+  }
+}
+
 async function weather(req, res) {
   try {
-    const { lat, lng } = req.query
-    const coords = [lng, lat].join(',')
-    const geo = await getGeo(coords)
-    const weather = await getWeather({ coords, address: geo.address })
+    const { latitude, longitude, theme } = req.query
+    const { geo, weather } = await getData({ latitude, longitude })
 
     res.json({
       geo,
       weather,
+      theme,
     })
   } catch (error) {
     console.error(error)

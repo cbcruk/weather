@@ -1,21 +1,32 @@
 import { useAtom } from 'jotai'
+import Cookies from 'js-cookie'
 import React from 'react'
+import { useMutation, useQueryClient } from 'react-query'
 import { useSpring, animated } from 'react-spring'
-import { fetchCoordsAtom } from '../../atom/coords'
 import { toggleAtom } from '../../atom/toggle'
-import { weatherAtom } from '../../atom/weather'
+import { COOKIES } from '../../constants'
+import { getGeolocation } from '../../helper'
+import { useWeather } from '../../hooks/useWeather'
 import { getFormattedDate, getFormattedTemperature } from './helper'
 import * as styles from './style'
 
 function Footer() {
-  const [{ geo, weather }] = useAtom(weatherAtom)
+  const {
+    data: { weather, geo },
+  } = useWeather()
   const [isSelected] = useAtom(toggleAtom)
-  const [, compute] = useAtom(fetchCoordsAtom)
   const style = useSpring({
     from: { opacity: 0 },
     opacity: isSelected ? 1 : 0,
     config: { duration: 1000 },
   })
+  const queryClient = useQueryClient()
+  const mutation = useMutation(() => getGeolocation(), {
+    onSuccess({ latitude, longitude }) {
+      Cookies.set(COOKIES.COORDS, [latitude, longitude].join('_'))
+    },
+  })
+
   const { temperature, compareTemperature, minTemperature, maxTemperature } =
     weather.today
 
@@ -25,9 +36,10 @@ function Footer() {
         {geo.address}
         <button
           className={styles.button}
-          onClick={(e) => {
+          onClick={async (e) => {
             e.stopPropagation()
-            compute()
+            await mutation.mutateAsync()
+            queryClient.invalidateQueries('weather')
           }}
         >
           <svg
