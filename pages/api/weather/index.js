@@ -51,12 +51,16 @@ async function weather(req, res) {
     const { latitude, longitude, theme } = req.query
     const { geo, weather } = await getData({ latitude, longitude })
 
-    res.setHeader('Cache-Control', `s-maxage=${1000 * 60 * 5}`)
-    res.json({
-      geo,
-      weather,
-      theme,
-    })
+    if (weather) {
+      res.setHeader('Cache-Control', `s-maxage=${60 * 60}`)
+      res.json({
+        geo,
+        weather,
+        theme,
+      })
+    } else {
+      res.end()
+    }
   } catch (error) {
     console.error(error)
   }
