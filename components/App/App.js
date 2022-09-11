@@ -11,7 +11,7 @@ import { useWeather } from '../../hooks/useWeather'
 
 function App() {
   const {
-    data: { theme },
+    data: { weather, theme },
   } = useWeather()
   const [, toggle] = useAtom(toggleAtom)
   const spring = useSpring({
@@ -33,8 +33,16 @@ function App() {
       style={spring}
       onClick={() => toggle((prev) => !prev)}
     >
-      <Body />
-      <Footer />
+      {(() => {
+        if (!weather) return null
+
+        return (
+          <>
+            <Body />
+            <Footer />
+          </>
+        )
+      })()}
     </animated.div>
   )
 }

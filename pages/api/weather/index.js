@@ -51,7 +51,7 @@ async function weather(req, res) {
     const { latitude, longitude, theme } = req.query
     const { geo, weather } = await getData({ latitude, longitude })
 
-    res.setHeader('Cache-Control', 's-maxage=300')
+    res.setHeader('Cache-Control', `s-maxage=${1000 * 60 * 5}`)
     res.json({
       geo,
       weather,
