@@ -13,9 +13,8 @@ function Body() {
   } = useWeather()
   const [isSelected] = useAtom(toggleAtom)
   const style = useSpring({
-    from: { opacity: 1, filter: 'blur(0px)' },
+    from: { opacity: 1 },
     opacity: isSelected ? 0.5 : 1,
-    filter: `blur(${isSelected ? 10 : 0}px)`,
     config: { duration: 1000 },
   })
 

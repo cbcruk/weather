@@ -18,6 +18,7 @@ function Footer() {
   const style = useSpring({
     from: { opacity: 0 },
     opacity: isSelected ? 1 : 0,
+    backdropFilter: `blur(${isSelected ? 10 : 0}px)`,
     config: { duration: 1000 },
   })
   const queryClient = useQueryClient()
