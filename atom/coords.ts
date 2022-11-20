@@ -10,7 +10,7 @@ const DEFAULT_COORDS = {
 export const coordsAtom = atom(
   isSSR
     ? DEFAULT_COORDS
-    : JSON.parse(localStorage.getItem('LATLNG')) || DEFAULT_COORDS
+    : JSON.parse(localStorage.getItem('LATLNG') || '{}') || DEFAULT_COORDS
 )
 
 export const permissionAtom = atom(async () => {

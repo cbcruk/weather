@@ -1,6 +1,11 @@
 import React from 'react'
 
-function Desc({ summary, location }) {
+type Props = {
+  summary: string
+  location: string
+}
+
+function Desc({ summary, location }: Props) {
   return (
     <div>
       <div>{summary}</div>

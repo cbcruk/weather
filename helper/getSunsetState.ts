@@ -10,8 +10,12 @@ export const SUNSET_STATE = {
   night: 'night',
 }
 
-function getSunsetState(coords) {
-  const times = sunCalc.getTimes(new Date(), coords.latitude, coords.longitude)
+function getSunsetState(coords: Partial<GeolocationCoordinates>) {
+  const times = sunCalc.getTimes(
+    new Date(),
+    coords.latitude || 0,
+    coords.longitude || 0
+  )
 
   const isNight = dayjs().isSameOrAfter(dayjs(times.sunset))
 

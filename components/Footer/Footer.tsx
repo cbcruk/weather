@@ -22,7 +22,8 @@ function Footer() {
     config: { duration: 1000 },
   })
   const queryClient = useQueryClient()
-  const mutation = useMutation(() => getGeolocation(), {
+  const mutation = useMutation({
+    mutationFn: () => getGeolocation(),
     onSuccess({ latitude, longitude }) {
       Cookies.set(COOKIES.COORDS, [latitude, longitude].join('_'), {
         expires: 365,

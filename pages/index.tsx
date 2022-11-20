@@ -1,3 +1,4 @@
+import { GetServerSideProps } from 'next'
 import { dehydrate, QueryClient } from 'react-query'
 import App from '../components/App'
 import { KEY } from '../hooks/useWeather'
@@ -7,7 +8,7 @@ function Index() {
   return <App />
 }
 
-export async function getServerSideProps({ query }) {
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   const queryClient = new QueryClient()
   await queryClient.prefetchQuery(KEY, () => getData(query))
 

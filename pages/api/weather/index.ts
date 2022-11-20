@@ -1,9 +1,11 @@
 import axios from 'axios'
+import { NextApiRequest, NextApiResponse } from 'next'
+import { GeocodeResponse } from '../../../types/geocode'
 
-async function getGeo(coords) {
+async function getGeo(coords: string) {
   const {
     data: { results },
-  } = await axios.get(`${process.env.API_URL}/api/geocode`, {
+  } = await axios.get<GeocodeResponse>(`${process.env.API_URL}/api/geocode`, {
     params: {
       request: 'coordsToaddr',
       version: '1.0',
@@ -22,7 +24,12 @@ async function getGeo(coords) {
   return { ...geo, address }
 }
 
-async function getWeather({ coords, address }) {
+type GetWeatherParams = {
+  coords: string
+  address: string
+}
+
+async function getWeather({ coords, address }: GetWeatherParams) {
   const {
     data: { weather },
   } = await axios.get(`${process.env.API_URL}/api/addresses/${coords}`, {
@@ -35,7 +42,10 @@ async function getWeather({ coords, address }) {
   return weather
 }
 
-export async function getData({ latitude, longitude }) {
+export async function getData({
+  latitude,
+  longitude,
+}: Partial<GeolocationCoordinates>) {
   const coords = [longitude, latitude].join(',')
   const geo = await getGeo(coords)
   const weather = await getWeather({ coords, address: geo.address })
@@ -46,10 +56,13 @@ export async function getData({ latitude, longitude }) {
   }
 }
 
-async function weather(req, res) {
+async function weather(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { latitude, longitude, theme } = req.query
-    const { geo, weather } = await getData({ latitude, longitude })
+    const { geo, weather } = await getData({
+      latitude: parseFloat(latitude as string),
+      longitude: parseFloat(longitude as string),
+    })
 
     if (weather) {
       res.setHeader('Cache-Control', `s-maxage=${60 * 60}`)

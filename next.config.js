@@ -1,6 +1,7 @@
-module.exports = {
-  experimental: {
-    concurrentFeatures: false,
-    serverComponents: false,
-  },
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
 }
+
+module.exports = nextConfig

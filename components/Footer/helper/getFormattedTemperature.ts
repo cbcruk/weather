@@ -1,4 +1,4 @@
-function getFormattedTemperature(temp) {
+function getFormattedTemperature(temp: string) {
   const parsed = parseFloat(temp)
 
   if (parsed > 0) {
