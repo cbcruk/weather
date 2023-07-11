@@ -1,10 +1,10 @@
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 import { getWeatherInfo } from '../../helper'
 
-export const KEY = 'weather'
-
 export function useWeather() {
-  const result = useQuery(KEY, () => getWeatherInfo(), {
+  const result = useQuery({
+    queryKey: ['weather'],
+    queryFn: () => getWeatherInfo(),
     refetchInterval: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
   })

@@ -1,19 +1,17 @@
 import { useAtom } from 'jotai'
 import Cookies from 'js-cookie'
 import React from 'react'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSpring, animated } from 'react-spring'
-import { toggleAtom } from '../../atom/toggle'
-import { COOKIES } from '../../constants'
-import { getGeolocation } from '../../helper'
-import { useWeather } from '../../hooks/useWeather'
+import { toggleAtom } from '../../../atom/toggle'
+import { COOKIES } from '../../../constants'
+import { getGeolocation } from '../../../helper'
+import { useWeather } from '../../../hooks/useWeather'
 import { getFormattedDate, getFormattedTemperature } from './helper'
 import * as styles from './style'
 
 function Footer() {
-  const {
-    data: { weather, geo },
-  } = useWeather()
+  const { data: weatherData } = useWeather()
   const [isSelected] = useAtom(toggleAtom)
   const style = useSpring({
     from: { opacity: 0 },
@@ -31,6 +29,11 @@ function Footer() {
     },
   })
 
+  if (!weatherData) {
+    return null
+  }
+
+  const { weather, geo } = weatherData
   const { temperature, compareTemperature, minTemperature, maxTemperature } =
     weather.today
 
@@ -43,7 +46,9 @@ function Footer() {
           onClick={async (e) => {
             e.stopPropagation()
             await mutation.mutateAsync()
-            queryClient.invalidateQueries('weather')
+            queryClient.invalidateQueries({
+              queryKey: ['weather'],
+            })
           }}
         >
           <svg

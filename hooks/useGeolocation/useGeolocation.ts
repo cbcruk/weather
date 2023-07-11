@@ -1,10 +1,10 @@
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 import { getGeolocation } from '../../helper'
 
-export const KEY = 'geolocation'
-
 export function useGeolocation() {
-  const result = useQuery(KEY, () => getGeolocation(), {
+  const result = useQuery({
+    queryKey: ['geolocation'],
+    queryFn: () => getGeolocation(),
     enabled: false,
   })
 

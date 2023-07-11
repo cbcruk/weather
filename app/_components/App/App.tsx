@@ -1,18 +1,18 @@
+'use client'
+
 import { useAtom } from 'jotai'
 import React from 'react'
 import { animated, useSpring } from 'react-spring'
 import { cx } from '@emotion/css'
-import { toggleAtom } from '../../atom/toggle'
+import { toggleAtom } from '../../../atom/toggle'
 import Body from '../Body'
 import Footer from '../Footer'
 import * as styles from './style'
-import { THEME_STATE } from '../../constants'
-import { useWeather } from '../../hooks/useWeather'
+import { THEME_STATE } from '../../../constants'
+import { useWeather } from '../../../hooks/useWeather'
 
 function App() {
-  const {
-    data: { weather, theme },
-  } = useWeather()
+  const { data: weatherData } = useWeather()
   const [, toggle] = useAtom(toggleAtom)
   const spring = useSpring({
     to: { opacity: 1 },
@@ -20,6 +20,12 @@ function App() {
     delay: 400,
     config: { duration: 600 },
   })
+
+  if (!weatherData) {
+    return null
+  }
+
+  const { theme } = weatherData
 
   return (
     <animated.div
@@ -33,16 +39,8 @@ function App() {
       style={spring}
       onClick={() => toggle((prev) => !prev)}
     >
-      {(() => {
-        if (!weather) return null
-
-        return (
-          <>
-            <Body />
-            <Footer />
-          </>
-        )
-      })()}
+      <Body />
+      <Footer />
     </animated.div>
   )
 }
