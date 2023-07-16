@@ -1,5 +1,4 @@
 import { atom } from 'jotai'
-import { getGeolocation } from '../helper'
 import { isSSR } from '../helper/ssr'
 import { DEFAULT_COORDS } from '@/constants'
 
@@ -14,14 +13,3 @@ export const permissionAtom = atom(async () => {
 
   return result.state
 })
-
-export const fetchCoordsAtom = atom(
-  (get) => get(coordsAtom),
-  async (_get, set) => {
-    const latlng = await getGeolocation()
-
-    localStorage.setItem('LATLNG', JSON.stringify(latlng))
-
-    set(coordsAtom, latlng)
-  }
-)
