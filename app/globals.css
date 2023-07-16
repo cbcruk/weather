@@ -31,5 +31,18 @@
 
 html {
   font-family: 'Noto Sans KR', sans-serif;
+}
+
+html[data-theme='새벽'],
+html[data-theme='저녁'],
+html[data-theme='밤'] {
+  background-color: var(--color-background-night);
+}
+
+html[data-theme='아침'] {
+  background-color: var(--color-background-morning);
+}
+
+html[data-theme='낮'] {
   background-color: var(--color-background-afternoon);
 }

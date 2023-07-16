@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Providers from './providers'
+import { getTimeState } from './utils'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 
 function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko">
+    <html lang="ko" data-theme={getTimeState()}>
       <body>
         <Providers>{children}</Providers>
       </body>
