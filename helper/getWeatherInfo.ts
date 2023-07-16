@@ -1,3 +1,4 @@
+import { THEME_STATE } from '@/constants'
 import { z } from 'zod'
 
 export const schema = z.object({
@@ -72,7 +73,7 @@ export const schema = z.object({
     detailUrl: z.string(),
     observeYmdt: z.string(),
   }),
-  theme: z.string(),
+  theme: z.enum([THEME_STATE.DARK, THEME_STATE.LIGHT]),
 })
 
 async function getWeatherInfo() {

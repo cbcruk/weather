@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getTimes } from 'suncalc'
-import { COOKIES, THEME_STATE } from './constants'
+import { COOKIES, DEFAULT_COORDS, THEME_STATE } from './constants'
 
 export const config = {
   matcher: ['/', '/api/weather'],
@@ -39,8 +39,8 @@ export function middleware({ nextUrl: url, geo, cookies }: NextRequest) {
     geo,
     coords,
   })
-  const latitude = geoData?.latitude ?? '37.5642135'
-  const longitude = geoData?.longitude ?? '127.0016985'
+  const latitude = geoData?.latitude ?? `${DEFAULT_COORDS.latitude}`
+  const longitude = geoData?.longitude ?? `${DEFAULT_COORDS.longitude}`
 
   const theme = getTheme({
     latitude: parseFloat(latitude),

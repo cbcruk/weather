@@ -1,11 +1,7 @@
 import { atom } from 'jotai'
 import { getGeolocation } from '../helper'
 import { isSSR } from '../helper/ssr'
-
-const DEFAULT_COORDS = {
-  latitude: 37.5642135,
-  longitude: 127.0016985,
-}
+import { DEFAULT_COORDS } from '@/constants'
 
 export const coordsAtom = atom(
   isSSR
