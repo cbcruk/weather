@@ -1,14 +1,11 @@
 import { useAtom } from 'jotai'
-import Cookies from 'js-cookie'
 import React from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSpring, animated } from 'react-spring'
 import { toggleAtom } from '../../../atom/toggle'
-import { COOKIES } from '../../../constants'
-import { getGeolocation } from '../../../helper'
 import { useWeather } from '../../../hooks/useWeather'
 import { getFormattedDate, getFormattedTemperature } from './helper'
 import * as styles from './style'
+import { useGeolocationMutation } from '@/hooks/useGeolocation'
 
 function Footer() {
   const { data: weatherData } = useWeather()
@@ -19,15 +16,8 @@ function Footer() {
     backdropFilter: `blur(${isSelected ? 10 : 0}px)`,
     config: { duration: 1000 },
   })
-  const queryClient = useQueryClient()
-  const mutation = useMutation({
-    mutationFn: () => getGeolocation(),
-    onSuccess({ latitude, longitude }) {
-      Cookies.set(COOKIES.COORDS, [latitude, longitude].join('_'), {
-        expires: 365,
-      })
-    },
-  })
+
+  const mutation = useGeolocationMutation()
 
   if (!weatherData) {
     return null
@@ -46,9 +36,6 @@ function Footer() {
           onClick={async (e) => {
             e.stopPropagation()
             await mutation.mutateAsync()
-            queryClient.invalidateQueries({
-              queryKey: ['weather'],
-            })
           }}
         >
           <svg
