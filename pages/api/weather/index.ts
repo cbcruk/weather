@@ -5,10 +5,10 @@ import { getWeatherData } from '@/helper/getWeatherData'
 export async function getData({
   latitude,
   longitude,
-}: Partial<GeolocationCoordinates>) {
+}: Pick<GeolocationCoordinates, 'latitude' | 'longitude'>) {
   const coords = [longitude, latitude].join(',')
   const geo = await getGeolocationData(coords)
-  const weather = await getWeatherData({ coords, address: geo.address })
+  const weather = await getWeatherData({ mappingId: geo.code.mappingId })
 
   return {
     geo,

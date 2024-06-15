@@ -25,7 +25,7 @@ function Body() {
   return (
     <animated.div className={styles.wrapper} style={style}>
       <Icon
-        code={weather.today.weatherCode}
+        code={weather.shortTermForecasts[0].weatherCode}
         isNight={theme === THEME_STATE.DARK}
       />
     </animated.div>

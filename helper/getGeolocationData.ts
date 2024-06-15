@@ -47,23 +47,17 @@ const schema = z.object({
   ),
 })
 
+export type Geocode = z.infer<typeof schema>['results'][number]
+
 export async function getGeolocationData(coords: string) {
-  const url = new URL(`${process.env.API_URL}/api/geocode`)
-  url.searchParams.set('request', 'coordsToaddr')
-  url.searchParams.set('version', '1.0')
-  url.searchParams.set('sourcecrs', 'epsg:4326')
-  url.searchParams.set('output', 'json')
+  const url = new URL(`${process.env.API_URL}/api/location/geocode`)
   url.searchParams.set('orders', 'legalcode')
   url.searchParams.set('coords', coords)
 
   const response = await fetch(url)
   const data = await response.json()
   const { results } = schema.parse(data)
-  const [geo] = results
-  const address = Object.values(geo.region)
-    .slice(1, 4)
-    .map((area) => area.name)
-    .join(' ')
+  const [geocode] = results
 
-  return { ...geo, address }
+  return geocode
 }

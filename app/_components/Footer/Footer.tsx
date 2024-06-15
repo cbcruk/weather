@@ -24,13 +24,15 @@ function Footer() {
   }
 
   const { weather, geo } = weatherData
-  const { temperature, compareTemperature, minTemperature, maxTemperature } =
-    weather.today
 
   return (
     <animated.div className={styles.wrapper} style={style}>
       <div className={styles.location}>
-        {geo.address}
+        {[
+          geo.region.area1.name,
+          geo.region.area2.name,
+          geo.region.area3.name,
+        ].join(' ')}
         <button
           className={styles.button}
           onClick={async (e) => {
@@ -51,11 +53,16 @@ function Footer() {
         </button>
       </div>
       <div className={styles.date}>{getFormattedDate()}</div>
-      <div className={styles.current}>{temperature}°</div>
+      <div className={styles.current}>
+        {weather.shortTermForecasts[0].temperature}°
+      </div>
       <div className={styles.status}>
-        {getFormattedTemperature(compareTemperature)}
+        {getFormattedTemperature(
+          weather.shortTermForecasts[0].compareTemperature
+        )}
         <span className={styles.temperature}>
-          {minTemperature}°—{maxTemperature}°
+          {weather.halfdayForecast.minTemperature}°—
+          {weather.halfdayForecast.maxTemperature}°
         </span>
       </div>
     </animated.div>
