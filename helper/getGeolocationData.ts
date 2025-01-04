@@ -1,3 +1,4 @@
+import { DEFAULT_HEADERS } from '@/constants'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -54,7 +55,9 @@ export async function getGeolocationData(coords: string) {
   url.searchParams.set('orders', 'legalcode')
   url.searchParams.set('coords', coords)
 
-  const response = await fetch(url)
+  const response = await fetch(url, {
+    headers: DEFAULT_HEADERS,
+  })
   const data = await response.json()
   const { results } = schema.parse(data)
   const [geocode] = results

@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { Geocode } from './getGeolocationData'
+import { DEFAULT_HEADERS } from '@/constants'
 
 type Params = {
   mappingId: Geocode['code']['mappingId']
@@ -122,7 +123,9 @@ export type Weather = Pick<Schema, 'halfdayForecast' | 'shortTermForecasts'>
 
 export async function getWeatherData({ mappingId }: Params) {
   const url = new URL(`${process.env.API_URL}/api/weather/today/${mappingId}`)
-  const response = await fetch(url)
+  const response = await fetch(url, {
+    headers: DEFAULT_HEADERS,
+  })
   const data = await response.json()
   const { halfdayForecast, shortTermForecasts } = schema.parse(data)
 

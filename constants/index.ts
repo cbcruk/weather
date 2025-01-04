@@ -11,3 +11,7 @@ export const DEFAULT_COORDS = {
   latitude: 37.5642135,
   longitude: 127.0016985,
 }
+
+export const DEFAULT_HEADERS = new Headers([
+  ['Referer', 'https://map.naver.com/p/'],
+])
