@@ -121,9 +121,12 @@ type Schema = z.infer<typeof schema>
 
 export type Weather = Pick<Schema, 'halfdayForecast' | 'shortTermForecasts'>
 
-export async function getWeatherData({ mappingId }: Params) {
+export async function getWeatherData(
+  { mappingId }: Params,
+  fetchWeatherData = fetch
+) {
   const url = new URL(`${process.env.API_URL}/api/weather/today/${mappingId}`)
-  const response = await fetch(url, {
+  const response = await fetchWeatherData(url, {
     headers: DEFAULT_HEADERS,
   })
   const data = await response.json()
