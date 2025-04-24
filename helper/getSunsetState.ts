@@ -17,7 +17,7 @@ export const SUNSET_STATE = {
   morning: 'morning',
   afternoon: 'afternoon',
   night: 'night',
-}
+} as const
 
 export function getSunsetState({
   date = new Date(),

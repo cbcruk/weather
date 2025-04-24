@@ -1,6 +1,6 @@
 import { COOKIES } from '@/constants'
 import { getGeolocationFromCookieOrServer } from '@/helper/getGeolocationFromCookieOrServer'
-import { getThemeByGeolocation } from '@/helper/getThemeByGeolocation'
+import { getThemeBySunsetState } from '@/helper/getThemeBySunsetState'
 import { NextRequest, NextResponse } from 'next/server'
 
 export function weather({ nextUrl, cookies, geo }: NextRequest) {
@@ -11,9 +11,11 @@ export function weather({ nextUrl, cookies, geo }: NextRequest) {
     },
     cookieData: cookies.get(COOKIES.COORDS)?.value,
   })
-  const theme = getThemeByGeolocation({
-    latitude: parseFloat(latitude),
-    longitude: parseFloat(longitude),
+  const theme = getThemeBySunsetState({
+    coords: {
+      latitude: parseFloat(latitude),
+      longitude: parseFloat(longitude),
+    },
   })
 
   nextUrl.searchParams.set('latitude', latitude)
