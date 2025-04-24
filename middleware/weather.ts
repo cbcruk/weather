@@ -1,16 +1,16 @@
-import { COOKIES, DEFAULT_COORDS } from '@/constants'
-import { getGeolocationFromServer } from '@/helper/getGeolocationFromServer'
+import { COOKIES } from '@/constants'
+import { getGeolocationFromCookieOrServer } from '@/helper/getGeolocationFromCookieOrServer'
 import { getThemeByGeolocation } from '@/helper/getThemeByGeolocation'
 import { NextRequest, NextResponse } from 'next/server'
 
 export function weather({ nextUrl, cookies, geo }: NextRequest) {
-  const coords = cookies.get(COOKIES.COORDS)?.value || ''
-  const geoData = getGeolocationFromServer({
-    geo,
-    coords,
+  const { latitude, longitude } = getGeolocationFromCookieOrServer({
+    serverData: {
+      latitude: geo?.latitude,
+      longitude: geo?.longitude,
+    },
+    cookieData: cookies.get(COOKIES.COORDS)?.value,
   })
-  const latitude = geoData?.latitude ?? `${DEFAULT_COORDS.latitude}`
-  const longitude = geoData?.longitude ?? `${DEFAULT_COORDS.longitude}`
   const theme = getThemeByGeolocation({
     latitude: parseFloat(latitude),
     longitude: parseFloat(longitude),
