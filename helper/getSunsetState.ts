@@ -13,7 +13,7 @@ type GetSunsetStateParams = {
   coords: Partial<GeolocationCoordinates>
 }
 
-export const SUNSET_STATE = {
+const SUNSET_STATE = {
   morning: 'morning',
   afternoon: 'afternoon',
   night: 'night',

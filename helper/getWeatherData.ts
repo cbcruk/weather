@@ -6,7 +6,7 @@ type Params = {
   mappingId: Geocode['code']['mappingId']
 }
 
-export const schema = z.object({
+const schema = z.object({
   regionCode: z.string(),
   largeAreaName: z.string(),
   middleAreaName: z.string(),

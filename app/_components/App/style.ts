@@ -21,16 +21,3 @@ export const isNight = css`
 export const isNoon = css`
   background-color: var(--color-background-afternoon);
 `
-
-export const isLoading = css`
-  position: fixed;
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(
-    270deg,
-    var(--color-background-day),
-    var(--color-background-night)
-  );
-  background-size: 400% 400%;
-  animation: gradient 30s ease infinite;
-`

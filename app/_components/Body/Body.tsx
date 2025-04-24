@@ -4,7 +4,7 @@ import { useSpring, animated } from 'react-spring'
 import { toggleAtom } from '../../../atom/toggle'
 import { THEME_STATE } from '../../../constants'
 import { useWeather } from '../../../hooks/useWeather/useWeather'
-import { Icon } from './components'
+import { Icon } from './components/Icon/Icon'
 import * as styles from './style'
 
 function Body() {
