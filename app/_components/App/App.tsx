@@ -9,7 +9,7 @@ import Body from '../Body'
 import Footer from '../Footer'
 import * as styles from './style'
 import { THEME_STATE } from '../../../constants'
-import { useWeather } from '../../../hooks/useWeather'
+import { useWeather } from '../../../hooks/useWeather/useWeather'
 
 function App() {
   const { data: weatherData } = useWeather()

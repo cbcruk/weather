@@ -3,7 +3,7 @@ import React from 'react'
 import { useSpring, animated } from 'react-spring'
 import { toggleAtom } from '../../../atom/toggle'
 import { THEME_STATE } from '../../../constants'
-import { useWeather } from '../../../hooks/useWeather'
+import { useWeather } from '../../../hooks/useWeather/useWeather'
 import { Icon } from './components'
 import * as styles from './style'
 

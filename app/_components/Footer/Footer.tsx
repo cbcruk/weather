@@ -2,10 +2,10 @@ import { useAtom } from 'jotai'
 import React from 'react'
 import { useSpring, animated } from 'react-spring'
 import { toggleAtom } from '../../../atom/toggle'
-import { useWeather } from '../../../hooks/useWeather'
+import { useWeather } from '../../../hooks/useWeather/useWeather'
 import { getFormattedDate, getFormattedTemperature } from './helper'
 import * as styles from './style'
-import { useGeolocationMutation } from '@/hooks/useGeolocation'
+import { useGeolocationMutation } from '@/hooks/useGeolocation/useGeolocation'
 
 function Footer() {
   const { data: weatherData } = useWeather()

@@ -1,5 +1,5 @@
 import { COOKIES } from '@/constants'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Cookies from 'js-cookie'
 
 function getGeolocationFromClient(): Promise<Partial<GeolocationCoordinates>> {
@@ -15,16 +15,6 @@ function getGeolocationFromClient(): Promise<Partial<GeolocationCoordinates>> {
       reject('위치정보 사용 불가능')
     }
   })
-}
-
-export function useGeolocation() {
-  const result = useQuery({
-    queryKey: ['geolocation'],
-    queryFn: () => getGeolocationFromClient(),
-    enabled: false,
-  })
-
-  return result
 }
 
 export function useGeolocationMutation() {
