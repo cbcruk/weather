@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
+import { SUNSET_STATE } from '@/constants'
 
 dayjs.extend(isSameOrAfter)
 dayjs.extend(utc)
@@ -12,12 +13,6 @@ type GetSunsetStateParams = {
   date?: Date
   coords: Partial<GeolocationCoordinates>
 }
-
-const SUNSET_STATE = {
-  morning: 'morning',
-  afternoon: 'afternoon',
-  night: 'night',
-} as const
 
 export function getSunsetState({
   date = new Date(),

@@ -15,3 +15,9 @@ export const DEFAULT_COORDS = {
 export const DEFAULT_HEADERS = new Headers([
   ['Referer', 'https://map.naver.com/p/'],
 ])
+
+export const SUNSET_STATE = {
+  morning: 'morning',
+  afternoon: 'afternoon',
+  night: 'night',
+} as const
