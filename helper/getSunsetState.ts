@@ -1,14 +1,6 @@
 import sunCalc from 'suncalc'
-import dayjs from 'dayjs'
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
-import timezone from 'dayjs/plugin/timezone'
-import utc from 'dayjs/plugin/utc'
 import { SUNSET_STATE } from '@/constants'
 import { getTimezoneDate } from './getTimezoneDate'
-
-dayjs.extend(isSameOrAfter)
-dayjs.extend(utc)
-dayjs.extend(timezone)
 
 type GetSunsetStateParams = {
   date?: Date
