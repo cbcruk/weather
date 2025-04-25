@@ -1,7 +1,7 @@
+import './globals.css'
 import type { Metadata } from 'next'
 import Providers from './providers'
-import { getTimeState } from './utils'
-import './globals.css'
+import { getTimeState } from '@/helper/getTimeState'
 
 export const metadata: Metadata = {
   title: '날씨',
