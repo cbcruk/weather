@@ -3,6 +3,20 @@ export const THEME_STATE = {
   LIGHT: 'LIGHT',
 } as const
 
+export const SUNSET_STATE = {
+  morning: 'morning',
+  afternoon: 'afternoon',
+  night: 'night',
+} as const
+
+export const TIME_STATE = {
+  새벽: '새벽',
+  아침: '아침',
+  낮: '낮',
+  저녁: '저녁',
+  밤: '밤',
+} as const
+
 export const COOKIES = {
   COORDS: 'COORDS',
 } as const
@@ -15,9 +29,3 @@ export const DEFAULT_COORDS = {
 export const DEFAULT_HEADERS = new Headers([
   ['Referer', 'https://map.naver.com/p/'],
 ])
-
-export const SUNSET_STATE = {
-  morning: 'morning',
-  afternoon: 'afternoon',
-  night: 'night',
-} as const

@@ -1,22 +1,23 @@
+import { TIME_STATE } from '@/constants'
 import { getTimezoneDate } from '@/helper/getTimezoneDate'
 import { QueryClient } from '@tanstack/react-query'
 import { cache } from 'react'
 
 export const getQueryClient = cache(() => new QueryClient())
 
-export function getTimeState() {
-  const tzDate = getTimezoneDate()
+export function getTimeState(date?: Date) {
+  const tzDate = getTimezoneDate(date)
   const currentHour = tzDate.hour()
 
   if (currentHour >= 0 && currentHour < 6) {
-    return '새벽'
+    return TIME_STATE.새벽
   } else if (currentHour >= 6 && currentHour < 11) {
-    return '아침'
+    return TIME_STATE.아침
   } else if (currentHour >= 11 && currentHour < 17) {
-    return '낮'
+    return TIME_STATE.낮
   } else if (currentHour >= 17 && currentHour < 21) {
-    return '저녁'
+    return TIME_STATE.저녁
   } else {
-    return '밤'
+    return TIME_STATE.밤
   }
 }
