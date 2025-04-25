@@ -1,11 +1,12 @@
+import { getTimezoneDate } from '@/helper/getTimezoneDate'
 import { QueryClient } from '@tanstack/react-query'
 import { cache } from 'react'
 
 export const getQueryClient = cache(() => new QueryClient())
 
 export function getTimeState() {
-  const currentTime = new Date()
-  const currentHour = currentTime.getHours()
+  const tzDate = getTimezoneDate()
+  const currentHour = tzDate.hour()
 
   if (currentHour >= 0 && currentHour < 6) {
     return '새벽'

@@ -4,6 +4,7 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { SUNSET_STATE } from '@/constants'
+import { getTimezoneDate } from './getTimezoneDate'
 
 dayjs.extend(isSameOrAfter)
 dayjs.extend(utc)
@@ -14,11 +15,8 @@ type GetSunsetStateParams = {
   coords: Partial<GeolocationCoordinates>
 }
 
-export function getSunsetState({
-  date = new Date(),
-  coords,
-}: GetSunsetStateParams) {
-  const tzDate = dayjs(date).tz('Asia/Seoul')
+export function getSunsetState({ date, coords }: GetSunsetStateParams) {
+  const tzDate = getTimezoneDate(date)
   const times = sunCalc.getTimes(
     tzDate.toDate(),
     coords.latitude || 0,
