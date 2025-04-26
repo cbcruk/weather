@@ -1,7 +1,7 @@
 'use client'
 
 import { cx } from '@emotion/css'
-import { useSpring, animated } from 'react-spring'
+import { useSpring, animated } from '@react-spring/web'
 import * as styles from './AppSpring.style'
 import { ComponentProps } from 'react'
 import { toggleAtom } from '@/atom/toggle'
@@ -9,7 +9,9 @@ import { useAtom } from 'jotai'
 
 type SpringOpacityProps = ComponentProps<'div'>
 
-export function AppSpring({ children, ref, ...props }: SpringOpacityProps) {
+const AnimatedDiv = animated('div')
+
+export function AppSpring({ children, ...props }: SpringOpacityProps) {
   const [, toggle] = useAtom(toggleAtom)
   const spring = useSpring({
     to: { opacity: 1 },
@@ -19,13 +21,13 @@ export function AppSpring({ children, ref, ...props }: SpringOpacityProps) {
   })
 
   return (
-    <animated.div
+    <AnimatedDiv
       className={cx([styles.wrapper])}
       style={spring}
       onClick={() => toggle((prev) => !prev)}
       {...props}
     >
       {children}
-    </animated.div>
+    </AnimatedDiv>
   )
 }

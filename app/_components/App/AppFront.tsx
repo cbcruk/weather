@@ -1,8 +1,10 @@
 import { useAtom } from 'jotai'
 import React, { PropsWithChildren } from 'react'
-import { useSpring, animated } from 'react-spring'
+import { useSpring, animated } from '@react-spring/web'
 import { toggleAtom } from '../../../atom/toggle'
 import * as styles from './AppFront.style'
+
+const AnimatedDiv = animated('div')
 
 export function AppFront({ children }: PropsWithChildren) {
   const [isSelected] = useAtom(toggleAtom)
@@ -13,8 +15,8 @@ export function AppFront({ children }: PropsWithChildren) {
   })
 
   return (
-    <animated.div className={styles.wrapper} style={style}>
+    <AnimatedDiv className={styles.wrapper} style={style}>
       {children}
-    </animated.div>
+    </AnimatedDiv>
   )
 }

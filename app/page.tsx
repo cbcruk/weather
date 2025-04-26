@@ -6,19 +6,20 @@ import { weatherOptions } from '@/queries/weather'
 import { AppSpring } from './_components/App/AppSpring'
 
 type Props = {
-  searchParams: SearchParamsSchema
+  searchParams: Promise<SearchParamsSchema>
 }
 
 export default async function Home({ searchParams }: Props) {
+  const params = await searchParams
   const queryClient = getQueryClient()
 
-  queryClient.prefetchQuery(weatherOptions(searchParams))
+  queryClient.prefetchQuery(weatherOptions(params))
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <App>
-        <AppSpring data-theme={searchParams.theme}>
-          <AppContainer {...searchParams} />
+        <AppSpring data-theme={params.theme}>
+          <AppContainer {...params} />
         </AppSpring>
       </App>
     </HydrationBoundary>

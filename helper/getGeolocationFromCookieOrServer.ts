@@ -1,8 +1,8 @@
 import { DEFAULT_COORDS } from '@/constants'
-import { NextRequest } from 'next/server'
+import { Geo } from '@vercel/functions'
 
 type GetGeolocationFromCookieOrServerParams = {
-  serverData: NextRequest['geo']
+  serverData: Geo
   cookieData: string | undefined
 }
 

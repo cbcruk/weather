@@ -2,14 +2,16 @@ import { COOKIES } from '@/constants'
 import { getGeolocationFromCookieOrServer } from '@/helper/getGeolocationFromCookieOrServer'
 import { getThemeBySunsetState } from '@/helper/getThemeBySunsetState'
 import { NextRequest, NextResponse } from 'next/server'
+import { geolocation } from '@vercel/functions'
 
-export function weather({ nextUrl, cookies, geo }: NextRequest) {
+export function weather(req: NextRequest) {
+  const geo = geolocation(req)
   const { latitude, longitude } = getGeolocationFromCookieOrServer({
     serverData: {
       latitude: geo?.latitude,
       longitude: geo?.longitude,
     },
-    cookieData: cookies.get(COOKIES.COORDS)?.value,
+    cookieData: req.cookies.get(COOKIES.COORDS)?.value,
   })
   const theme = getThemeBySunsetState({
     coords: {
@@ -18,9 +20,9 @@ export function weather({ nextUrl, cookies, geo }: NextRequest) {
     },
   })
 
-  nextUrl.searchParams.set('latitude', latitude)
-  nextUrl.searchParams.set('longitude', longitude)
-  nextUrl.searchParams.set('theme', theme)
+  req.nextUrl.searchParams.set('latitude', latitude)
+  req.nextUrl.searchParams.set('longitude', longitude)
+  req.nextUrl.searchParams.set('theme', theme)
 
-  return NextResponse.rewrite(nextUrl)
+  return NextResponse.rewrite(req.nextUrl)
 }
