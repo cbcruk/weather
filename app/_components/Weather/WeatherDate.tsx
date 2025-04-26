@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import 'dayjs/locale/ko'
+import * as styles from './style'
 
 dayjs.locale('ko')
 
@@ -9,4 +10,6 @@ function getFormattedDate() {
   return result
 }
 
-export default getFormattedDate
+export function WeatherDate() {
+  return <div className={styles.date}>{getFormattedDate()}</div>
+}

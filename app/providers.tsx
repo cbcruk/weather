@@ -1,19 +1,22 @@
 'use client'
 
+import { getQueryClient } from '@/helper/getQueryClient'
 import {
-  QueryClient,
   QueryClientProvider,
   QueryClientProviderProps,
 } from '@tanstack/react-query'
-import { useState } from 'react'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 type Props = Pick<QueryClientProviderProps, 'children'>
 
 function Providers({ children }: Props) {
-  const [queryClient] = useState(() => new QueryClient())
+  const queryClient = getQueryClient()
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      {children}
+      <ReactQueryDevtools />
+    </QueryClientProvider>
   )
 }
 

@@ -1,8 +1,9 @@
 import { z } from 'zod'
 
 const searchParamsSchema = z.object({
-  latitude: z.number(),
-  longitude: z.number(),
+  latitude: z.string(),
+  longitude: z.string(),
+  theme: z.string(),
 })
 
 export type SearchParamsSchema = z.infer<typeof searchParamsSchema>

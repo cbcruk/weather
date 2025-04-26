@@ -12,12 +12,12 @@ export const wrapper = css`
   @supports (-webkit-touch-callout: none) {
     height: -webkit-fill-available;
   }
-`
 
-export const isNight = css`
-  background-color: var(--color-background-night);
-`
+  &[data-theme='DARK'] {
+    background-color: var(--color-background-night);
+  }
 
-export const isNoon = css`
-  background-color: var(--color-background-afternoon);
+  &[data-theme='LIGHT'] {
+    background-color: var(--color-background-afternoon);
+  }
 `

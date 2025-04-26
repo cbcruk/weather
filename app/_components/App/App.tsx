@@ -1,48 +1,66 @@
 'use client'
 
-import { useAtom } from 'jotai'
-import React from 'react'
-import { animated, useSpring } from 'react-spring'
-import { cx } from '@emotion/css'
-import { toggleAtom } from '../../../atom/toggle'
-import Body from '../Body'
-import Footer from '../Footer'
-import * as styles from './style'
+import React, { PropsWithChildren, Suspense } from 'react'
+import { AppBack } from './AppBack'
+import { AppFront } from './AppFront'
+import { WeatherMinAndMaxTemperature } from '../Weather/WeatherMinAndMaxTemperature'
+import { WeatherTemperature } from '../Weather/WeatherTemperature'
+import { WeatherArea } from '../Weather/WeatherArea'
+import { WeatherGeolocationButton } from '../Weather/WeatherGeolocationButton'
 import { THEME_STATE } from '../../../constants'
-import { useWeather } from '../../../hooks/useWeather/useWeather'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { weatherOptions } from '@/queries/weather'
+import { SearchParamsSchema } from '@/app/schema'
+import { WeatherCompareTemperature } from '../Weather/WeatherCompareTemperature'
+import { WeatherDate } from '../Weather/WeatherDate'
+import { WeatherIcon } from '../Weather/WeatherIcon'
 
-function App() {
-  const { data: weatherData } = useWeather()
-  const [, toggle] = useAtom(toggleAtom)
-  const spring = useSpring({
-    to: { opacity: 1 },
-    from: { opacity: 0 },
-    delay: 400,
-    config: { duration: 600 },
-  })
-
-  if (!weatherData) {
-    return null
-  }
-
-  const { theme } = weatherData
+export function AppContainer({
+  latitude,
+  longitude,
+  theme,
+}: SearchParamsSchema) {
+  const { data: weatherData } = useSuspenseQuery(
+    weatherOptions({
+      latitude,
+      longitude,
+    })
+  )
+  const [shortTermForecast] = weatherData.weather.shortTermForecasts
 
   return (
-    <animated.div
-      className={cx([
-        styles.wrapper,
-        {
-          [styles.isNight]: theme === THEME_STATE.DARK,
-          [styles.isNoon]: theme === THEME_STATE.LIGHT,
-        },
-      ])}
-      style={spring}
-      onClick={() => toggle((prev) => !prev)}
-    >
-      <Body />
-      <Footer />
-    </animated.div>
+    <>
+      <AppFront>
+        <WeatherIcon
+          code={shortTermForecast.weatherCode}
+          isNight={theme === THEME_STATE.DARK}
+        />
+      </AppFront>
+      <AppBack>
+        <WeatherArea
+          names={[
+            weatherData.geo.region.area1.name,
+            weatherData.geo.region.area2.name,
+            weatherData.geo.region.area3.name,
+          ]}
+        >
+          <WeatherGeolocationButton />
+        </WeatherArea>
+        <WeatherDate />
+        <WeatherTemperature temperature={shortTermForecast.temperature} />
+        <WeatherCompareTemperature
+          compareTemperature={shortTermForecast.compareTemperature}
+        >
+          <WeatherMinAndMaxTemperature
+            minTemperature={weatherData.weather.halfdayForecast.minTemperature}
+            maxTemperature={weatherData.weather.halfdayForecast.maxTemperature}
+          />
+        </WeatherCompareTemperature>
+      </AppBack>
+    </>
   )
 }
 
-export default App
+export function App({ children }: PropsWithChildren) {
+  return <Suspense>{children}</Suspense>
+}

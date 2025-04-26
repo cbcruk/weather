@@ -1,8 +1,9 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
-import App from '@/app/_components/App'
-import { getQueryClient } from './utils'
-import { getData as getWeatherData } from '@/pages/api/weather'
+import { App, AppContainer } from '@/app/_components/App/App'
 import { SearchParamsSchema } from './schema'
+import { getQueryClient } from '@/helper/getQueryClient'
+import { weatherOptions } from '@/queries/weather'
+import { AppSpring } from './_components/App/AppSpring'
 
 type Props = {
   searchParams: SearchParamsSchema
@@ -10,15 +11,16 @@ type Props = {
 
 export default async function Home({ searchParams }: Props) {
   const queryClient = getQueryClient()
-  await queryClient.prefetchQuery({
-    queryKey: ['weather'],
-    queryFn: () => getWeatherData(searchParams),
-  })
-  const dehydratedState = dehydrate(queryClient)
+
+  queryClient.prefetchQuery(weatherOptions(searchParams))
 
   return (
-    <HydrationBoundary state={dehydratedState}>
-      <App />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <App>
+        <AppSpring data-theme={searchParams.theme}>
+          <AppContainer {...searchParams} />
+        </AppSpring>
+      </App>
     </HydrationBoundary>
   )
 }
