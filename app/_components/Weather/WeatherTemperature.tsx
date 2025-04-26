@@ -1,5 +1,5 @@
+import { WeatherShortTermForecast } from '@/app/schema'
 import * as styles from './style'
-import { WeatherShortTermForecast } from './types'
 
 export function WeatherTemperature({
   temperature,

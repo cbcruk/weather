@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react'
-import { WeatherShortTermForecast } from './types'
 import * as styles from './style'
+import { WeatherShortTermForecast } from '@/app/schema'
 
 function getFormattedTemperature(
   temperature: WeatherCompareTemperatureProps['compareTemperature']
