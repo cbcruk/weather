@@ -1,5 +1,4 @@
 import { PropsWithChildren } from 'react'
-import * as styles from './style'
 import { WeatherShortTermForecast } from '@/app/schema'
 
 function getFormattedTemperature(
@@ -24,7 +23,7 @@ export function WeatherCompareTemperature({
   children,
 }: PropsWithChildren<WeatherCompareTemperatureProps>) {
   return (
-    <div className={styles.status}>
+    <div className="flex justify-between font-semibold">
       {getFormattedTemperature(compareTemperature)}
       {children}
     </div>

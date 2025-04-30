@@ -1,5 +1,4 @@
 import { PropsWithChildren } from 'react'
-import * as styles from './style'
 import { GeocodeSchema } from '@/app/schema'
 
 export function WeatherArea({
@@ -7,7 +6,7 @@ export function WeatherArea({
   children,
 }: PropsWithChildren<{ names: Array<GeocodeSchema['name']> }>) {
   return (
-    <div className={styles.location}>
+    <div className="flex items-center gap-2.5 font-semibold">
       {names.join(' ')}
       {children}
     </div>

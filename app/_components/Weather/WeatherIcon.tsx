@@ -1,6 +1,5 @@
 import React from 'react'
 import { IMAGE_PATH, ICONS_DAY, ICONS_NIGHT } from './WeatherIcon.constants'
-import * as styles from './WeatherIcon.style'
 
 type Props = {
   code: string
@@ -13,5 +12,5 @@ export function WeatherIcon({ code, isNight }: Props) {
   const src = `${IMAGE_PATH}/ico_animation_wt${value}.svg`
 
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt="" className={styles.wrapper} />
+  return <img src={src} alt="" className="w-full max-w-[375px]" />
 }

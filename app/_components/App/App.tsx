@@ -62,5 +62,5 @@ export function AppContainer({
 }
 
 export function App({ children }: PropsWithChildren) {
-  return <Suspense>{children}</Suspense>
+  return <Suspense fallback={null}>{children}</Suspense>
 }

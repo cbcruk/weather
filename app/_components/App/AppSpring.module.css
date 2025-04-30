@@ -1,0 +1,13 @@
+@supports (-webkit-touch-callout: none) {
+  .wrapper {
+    height: -webkit-fill-available;
+  }
+}
+
+.wrapper[data-theme='DARK'] {
+  background-color: var(--color-background-night);
+}
+
+.wrapper[data-theme='LIGHT'] {
+  background-color: var(--color-background-afternoon);
+}

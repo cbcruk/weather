@@ -1,6 +1,5 @@
 import dayjs from 'dayjs'
 import 'dayjs/locale/ko'
-import * as styles from './style'
 
 dayjs.locale('ko')
 
@@ -11,5 +10,5 @@ function getFormattedDate() {
 }
 
 export function WeatherDate() {
-  return <div className={styles.date}>{getFormattedDate()}</div>
+  return <div className="mt-3.5">{getFormattedDate()}</div>
 }

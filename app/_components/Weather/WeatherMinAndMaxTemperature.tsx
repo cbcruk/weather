@@ -1,5 +1,4 @@
 import { WeatherSchema } from '@/app/schema'
-import * as styles from './style'
 
 export function WeatherMinAndMaxTemperature({
   minTemperature,
@@ -9,7 +8,7 @@ export function WeatherMinAndMaxTemperature({
   'minTemperature' | 'maxTemperature'
 >) {
   return (
-    <span className={styles.temperature}>
+    <span className="flex">
       {minTemperature}°—
       {maxTemperature}°
     </span>

@@ -2,7 +2,6 @@ import { useAtom } from 'jotai'
 import React, { PropsWithChildren } from 'react'
 import { useSpring, animated } from '@react-spring/web'
 import { toggleAtom } from '../../../atom/toggle'
-import * as styles from './AppBack.style'
 
 const AnimatedDiv = animated('div')
 
@@ -16,7 +15,10 @@ export function AppBack({ children }: PropsWithChildren) {
   })
 
   return (
-    <AnimatedDiv className={styles.wrapper} style={style}>
+    <AnimatedDiv
+      className="fixed z-10 flex flex-col justify-end w-full h-full text-[21px] text-white p-[30px] left-0 top-0"
+      style={style}
+    >
       {children}
     </AnimatedDiv>
   )

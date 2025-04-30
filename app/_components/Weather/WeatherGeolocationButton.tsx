@@ -1,12 +1,11 @@
 import { useGeolocationMutation } from '@/hooks/useGeolocation/useGeolocation'
-import * as styles from './style'
 
 export function WeatherGeolocationButton() {
   const mutation = useGeolocationMutation()
 
   return (
     <button
-      className={styles.button}
+      className="cursor-pointer"
       onClick={async (e) => {
         e.stopPropagation()
         await mutation.mutateAsync()
