@@ -142,7 +142,7 @@ export const weatherResponseSchema = z.object({
     stationId: z.null(),
     stationName: z.string(),
     stationType: z.null(),
-    stationAddr: z.string(),
+    stationAddr: z.string().nullable(),
     stationLat: z.number(),
     stationLng: z.number(),
     stationNaverRgnCd: z.string(),
