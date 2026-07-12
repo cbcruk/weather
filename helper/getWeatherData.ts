@@ -14,8 +14,8 @@ export async function getWeatherData(
     headers: DEFAULT_HEADERS,
   })
   const data = await response.json()
-  const { halfdayForecast, shortTermForecasts, airForeCast } =
+  const { halfdayForecast, shortTermForecasts, airForeCast, weeklyForecast } =
     weatherResponseSchema.parse(data)
 
-  return { halfdayForecast, shortTermForecasts, airForeCast }
+  return { halfdayForecast, shortTermForecasts, airForeCast, weeklyForecast }
 }

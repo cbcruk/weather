@@ -18,6 +18,7 @@ import { WeatherCondition } from '../Weather/WeatherCondition'
 import { WeatherFeelsLike } from '../Weather/WeatherFeelsLike'
 import { WeatherCard } from '../Weather/WeatherCard'
 import { WeatherMetrics } from '../Weather/WeatherMetrics'
+import { WeatherWeeklyForecast } from '../Weather/WeatherWeeklyForecast'
 
 export function AppContainer({
   latitude,
@@ -74,6 +75,12 @@ export function AppContainer({
         <WeatherMetrics
           forecast={shortTermForecast}
           air={weatherData.weather.airForeCast}
+        />
+        <WeatherWeeklyForecast
+          dailyForecasts={
+            weatherData.weather.weeklyForecast.dailyForecasts
+          }
+          isNight={theme === THEME_STATE.DARK}
         />
       </AppBack>
     </>
