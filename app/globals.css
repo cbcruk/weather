@@ -5,6 +5,7 @@
   --color-background-night: #455681;
   --color-background-afternoon: #a793ac;
   --color-text: #fffeff;
+  --color-accent: #b7f171;
 }
 
 @keyframes gradient {

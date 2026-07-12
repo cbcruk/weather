@@ -14,6 +14,8 @@ import { SearchParamsSchema } from '@/app/schema'
 import { WeatherCompareTemperature } from '../Weather/WeatherCompareTemperature'
 import { WeatherDate } from '../Weather/WeatherDate'
 import { WeatherIcon } from '../Weather/WeatherIcon'
+import { WeatherCondition } from '../Weather/WeatherCondition'
+import { WeatherFeelsLike } from '../Weather/WeatherFeelsLike'
 
 export function AppContainer({
   latitude,
@@ -47,7 +49,9 @@ export function AppContainer({
           <WeatherGeolocationButton />
         </WeatherArea>
         <WeatherDate />
+        <WeatherCondition weatherText={shortTermForecast.weatherText} />
         <WeatherTemperature temperature={shortTermForecast.temperature} />
+        <WeatherFeelsLike stmpr={shortTermForecast.stmpr} />
         <WeatherCompareTemperature
           compareTemperature={shortTermForecast.compareTemperature}
         >
