@@ -16,6 +16,8 @@ import { WeatherDate } from '../Weather/WeatherDate'
 import { WeatherIcon } from '../Weather/WeatherIcon'
 import { WeatherCondition } from '../Weather/WeatherCondition'
 import { WeatherFeelsLike } from '../Weather/WeatherFeelsLike'
+import { WeatherCard } from '../Weather/WeatherCard'
+import { WeatherMetrics } from '../Weather/WeatherMetrics'
 
 export function AppContainer({
   latitude,
@@ -39,27 +41,40 @@ export function AppContainer({
         />
       </AppFront>
       <AppBack>
-        <WeatherArea
-          names={[
-            weatherData.geo.region.area1.name,
-            weatherData.geo.region.area2.name,
-            weatherData.geo.region.area3.name,
-          ]}
-        >
-          <WeatherGeolocationButton />
-        </WeatherArea>
-        <WeatherDate />
-        <WeatherCondition weatherText={shortTermForecast.weatherText} />
-        <WeatherTemperature temperature={shortTermForecast.temperature} />
-        <WeatherFeelsLike stmpr={shortTermForecast.stmpr} />
-        <WeatherCompareTemperature
-          compareTemperature={shortTermForecast.compareTemperature}
-        >
-          <WeatherMinAndMaxTemperature
-            minTemperature={weatherData.weather.halfdayForecast.minTemperature}
-            maxTemperature={weatherData.weather.halfdayForecast.maxTemperature}
+        <div className="flex flex-col items-center gap-1">
+          <WeatherArea
+            names={[
+              weatherData.geo.region.area1.name,
+              weatherData.geo.region.area2.name,
+              weatherData.geo.region.area3.name,
+            ]}
+          >
+            <WeatherGeolocationButton />
+          </WeatherArea>
+          <WeatherDate />
+        </div>
+        <WeatherCard>
+          <WeatherCondition weatherText={shortTermForecast.weatherText} />
+          <div className="flex items-center justify-center gap-4">
+            <WeatherTemperature temperature={shortTermForecast.temperature} />
+            <WeatherMinAndMaxTemperature
+              minTemperature={
+                weatherData.weather.halfdayForecast.minTemperature
+              }
+              maxTemperature={
+                weatherData.weather.halfdayForecast.maxTemperature
+              }
+            />
+          </div>
+          <WeatherFeelsLike stmpr={shortTermForecast.stmpr} />
+          <WeatherCompareTemperature
+            compareTemperature={shortTermForecast.compareTemperature}
           />
-        </WeatherCompareTemperature>
+        </WeatherCard>
+        <WeatherMetrics
+          forecast={shortTermForecast}
+          air={weatherData.weather.airForeCast}
+        />
       </AppBack>
     </>
   )

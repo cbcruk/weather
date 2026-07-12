@@ -1,4 +1,3 @@
-import { PropsWithChildren } from 'react'
 import { WeatherShortTermForecast } from '@/app/schema'
 
 function getFormattedTemperature(
@@ -20,12 +19,10 @@ type WeatherCompareTemperatureProps = Pick<
 
 export function WeatherCompareTemperature({
   compareTemperature,
-  children,
-}: PropsWithChildren<WeatherCompareTemperatureProps>) {
+}: WeatherCompareTemperatureProps) {
   return (
-    <div className="flex justify-between font-semibold">
+    <div className="text-sm font-medium opacity-80">
       {getFormattedTemperature(compareTemperature)}
-      {children}
     </div>
   )
 }

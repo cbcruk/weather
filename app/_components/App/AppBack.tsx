@@ -16,7 +16,7 @@ export function AppBack({ children }: PropsWithChildren) {
 
   return (
     <AnimatedDiv
-      className="fixed z-10 flex flex-col justify-end w-full h-full text-[21px] text-white p-[30px] left-0 top-0"
+      className="fixed z-10 flex flex-col items-center justify-center gap-6 w-full h-full max-w-[440px] mx-auto overflow-y-auto text-[21px] text-white p-[30px] left-0 right-0 top-0"
       style={style}
     >
       {children}

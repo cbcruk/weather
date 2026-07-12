@@ -8,7 +8,7 @@ export function WeatherMinAndMaxTemperature({
   'minTemperature' | 'maxTemperature'
 >) {
   return (
-    <span className="flex items-center gap-2 text-[color:var(--color-accent)]">
+    <span className="flex flex-col items-start gap-0.5 text-lg font-semibold text-[color:var(--color-accent)]">
       <span className="flex items-center">
         <span aria-hidden className="mr-0.5">
           ↑
