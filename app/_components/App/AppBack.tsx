@@ -16,10 +16,12 @@ export function AppBack({ children }: PropsWithChildren) {
 
   return (
     <AnimatedDiv
-      className="fixed z-10 flex flex-col items-center justify-center gap-6 w-full h-full max-w-[440px] mx-auto overflow-y-auto text-[21px] text-white p-[30px] left-0 right-0 top-0"
-      style={style}
+      className="fixed inset-0 z-10 overflow-y-auto text-[21px] text-white"
+      style={{ ...style, pointerEvents: isSelected ? 'auto' : 'none' }}
     >
-      {children}
+      <div className="mx-auto flex min-h-full max-w-[440px] flex-col items-center justify-center gap-6 px-6 py-10">
+        {children}
+      </div>
     </AnimatedDiv>
   )
 }
