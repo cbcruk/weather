@@ -5,9 +5,14 @@ export function WeatherArea({
   names,
   children,
 }: PropsWithChildren<{ names: Array<GeocodeSchema['name']> }>) {
+  const label = names
+    .map((name) => name.trim())
+    .filter(Boolean)
+    .join(' ')
+
   return (
     <div className="flex items-center gap-2.5 font-semibold">
-      {names.join(' ')}
+      {label}
       {children}
     </div>
   )
