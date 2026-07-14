@@ -50,24 +50,34 @@ html[data-theme='낮'] {
 .weather-card {
   position: relative;
   overflow: hidden;
-  border-radius: 40px;
+  border-radius: 64px;
   background: var(--card-gradient-day);
-  box-shadow: 0 20px 45px -20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 24px 50px -22px rgba(0, 0, 0, 0.55);
 }
 
 [data-theme='DARK'] .weather-card {
   background: var(--card-gradient-night);
 }
 
+.weather-card::before,
 .weather-card::after {
   content: '';
   position: absolute;
-  left: -20%;
-  right: -20%;
-  bottom: -30%;
-  height: 60%;
-  background:
-    radial-gradient(60% 100% at 25% 100%, var(--card-wave) 0%, transparent 70%),
-    radial-gradient(55% 90% at 80% 100%, var(--card-wave) 0%, transparent 70%);
+  border-radius: 50%;
+  background: var(--card-wave);
   pointer-events: none;
+}
+
+.weather-card::before {
+  left: -30%;
+  bottom: -55%;
+  width: 95%;
+  aspect-ratio: 2 / 1;
+}
+
+.weather-card::after {
+  right: -25%;
+  bottom: -40%;
+  width: 80%;
+  aspect-ratio: 2 / 1;
 }

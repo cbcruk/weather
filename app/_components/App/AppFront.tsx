@@ -15,7 +15,7 @@ export function AppFront({ children }: PropsWithChildren) {
 
   return (
     <AnimatedDiv
-      className="flex flex-col items-center justify-center flex-1 relative z-10 text-xs text-white p-[30px]"
+      className="relative z-10 mx-auto flex w-full max-w-[440px] flex-1 flex-col items-center justify-center gap-4 px-6 py-10 text-base text-white"
       style={style}
     >
       {children}

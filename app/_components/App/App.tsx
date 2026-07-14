@@ -33,30 +33,34 @@ export function AppContainer({
   )
   const [shortTermForecast] = weatherData.weather.shortTermForecasts
 
+  const isNight = theme === THEME_STATE.DARK
+  const area = (
+    <WeatherArea
+      names={[
+        weatherData.geo.region.area1.name,
+        weatherData.geo.region.area2.name,
+        weatherData.geo.region.area3.name,
+      ]}
+    >
+      <WeatherGeolocationButton />
+    </WeatherArea>
+  )
+
   return (
     <>
       <AppFront>
-        <WeatherIcon
-          code={shortTermForecast.weatherCode}
-          isNight={theme === THEME_STATE.DARK}
-        />
-      </AppFront>
-      <AppBack>
         <div className="flex flex-col items-center gap-1">
-          <WeatherArea
-            names={[
-              weatherData.geo.region.area1.name,
-              weatherData.geo.region.area2.name,
-              weatherData.geo.region.area3.name,
-            ]}
-          >
-            <WeatherGeolocationButton />
-          </WeatherArea>
+          {area}
           <WeatherDate />
         </div>
         <WeatherCard>
           <WeatherCondition weatherText={shortTermForecast.weatherText} />
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex w-full items-center justify-center gap-3">
+            <WeatherIcon
+              code={shortTermForecast.weatherCode}
+              isNight={isNight}
+              className="size-20 shrink-0"
+            />
             <WeatherTemperature temperature={shortTermForecast.temperature} />
             <WeatherMinAndMaxTemperature
               minTemperature={
@@ -68,19 +72,20 @@ export function AppContainer({
             />
           </div>
           <WeatherFeelsLike stmpr={shortTermForecast.stmpr} />
-          <WeatherCompareTemperature
-            compareTemperature={shortTermForecast.compareTemperature}
-          />
         </WeatherCard>
+        <WeatherCompareTemperature
+          compareTemperature={shortTermForecast.compareTemperature}
+        />
+      </AppFront>
+      <AppBack>
+        {area}
         <WeatherMetrics
           forecast={shortTermForecast}
           air={weatherData.weather.airForeCast}
         />
         <WeatherWeeklyForecast
-          dailyForecasts={
-            weatherData.weather.weeklyForecast.dailyForecasts
-          }
-          isNight={theme === THEME_STATE.DARK}
+          dailyForecasts={weatherData.weather.weeklyForecast.dailyForecasts}
+          isNight={isNight}
         />
       </AppBack>
     </>
