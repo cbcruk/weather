@@ -88,18 +88,15 @@ describe('sendErrorReport', () => {
     consoleError.mockRestore()
   })
 
-  it('코드 수정이 필요한 에러만 이슈로 넘긴다', async () => {
+  it('모든 에러를 이슈 싱크로 넘기고, 대상 판단은 싱크가 한다', async () => {
     const upsert = vi
       .spyOn(errorIssue, 'upsertErrorIssue')
       .mockResolvedValue(undefined)
 
     await sendErrorReport(report({ tag: 'SchemaError' }))
-    expect(upsert).toHaveBeenCalledOnce()
-
-    upsert.mockClear()
     await sendErrorReport(report({ tag: 'NetworkError' }))
-    expect(upsert).not.toHaveBeenCalled()
 
+    expect(upsert).toHaveBeenCalledTimes(2)
     upsert.mockRestore()
   })
 

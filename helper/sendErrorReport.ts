@@ -1,6 +1,5 @@
 import 'server-only'
 import { ErrorReport } from './errorReport'
-import { needsCodeFix } from './errorIssuePolicy'
 import { upsertErrorIssue } from './errorIssue'
 
 const WINDOW_MS = 5 * 60 * 1000
@@ -57,7 +56,8 @@ async function sendWebhook(text: string): Promise<void> {
  * 두 수집처로 나눠 보낸다. 역할이 다르다.
  *
  * - webhook: 모든 에러. "지금 뭔가 났다"는 실시간 알림.
- * - issue:   고칠 코드가 우리 쪽에 있는 에러만. "아직 안 고쳐졌다"는 상태.
+ * - issue:   태그별로 하나씩. "아직 안 고쳐졌다"는 상태.
+ *            대상이 아닌 태그는 upsertErrorIssue 가 스스로 걸러낸다.
  *
  * 한쪽이 실패해도 다른 쪽은 보내야 하므로 allSettled로 묶는다.
  */
@@ -77,7 +77,7 @@ export async function sendErrorReport(report: ErrorReport): Promise<void> {
 
   const results = await Promise.allSettled([
     sendWebhook(text),
-    needsCodeFix(report) ? upsertErrorIssue(report) : Promise.resolve(),
+    upsertErrorIssue(report),
   ])
 
   results.forEach((result, index) => {

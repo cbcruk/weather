@@ -1,67 +1,63 @@
 import { describe, it, expect } from 'vitest'
-import { needsCodeFix, fingerprintOf } from './errorIssuePolicy'
+import { issueKeyOf, issueTitleOf, UNEXPECTED_KEY } from './errorIssuePolicy'
 import type { ErrorReport } from './errorReport'
 
 function report(overrides: Partial<ErrorReport> = {}): ErrorReport {
   return { tag: 'SchemaError', message: 'msg', source: 'server', ...overrides }
 }
 
-describe('needsCodeFix', () => {
+describe('issueKeyOf', () => {
   it.each([
-    ['SchemaError', report({ tag: 'SchemaError' }), true],
-    ['EmptyResultError', report({ tag: 'EmptyResultError' }), true],
-    ['예상 못한 TypeError', report({ tag: 'TypeError' }), true],
-    ['HttpError 404', report({ tag: 'HttpError', status: 404 }), true],
-    ['HttpError 403 (차단)', report({ tag: 'HttpError', status: 403 }), true],
-    ['HttpError 503 (남의 장애)', report({ tag: 'HttpError', status: 503 }), false],
-    ['NetworkError', report({ tag: 'NetworkError' }), false],
-  ])('%s → %s', (_label, input, expected) => {
-    expect(needsCodeFix(input)).toBe(expected)
+    ['SchemaError', report({ tag: 'SchemaError' }), 'SchemaError'],
+    ['JsonParseError', report({ tag: 'JsonParseError' }), 'JsonParseError'],
+    [
+      'EmptyResultError',
+      report({ tag: 'EmptyResultError' }),
+      'EmptyResultError',
+    ],
+    ['HttpError 404', report({ tag: 'HttpError', status: 404 }), 'HttpError'],
+    ['HttpError 403', report({ tag: 'HttpError', status: 403 }), 'HttpError'],
+  ])('알려진 태그는 자기 이름이 키가 된다 — %s', (_label, input, expected) => {
+    expect(issueKeyOf(input)).toBe(expected)
   })
 
-  it('status 없는 HttpError는 이슈로 만들지 않는다', () => {
-    expect(needsCodeFix(report({ tag: 'HttpError' }))).toBe(false)
+  it.each([
+    ['NetworkError (상대 서버 장애)', report({ tag: 'NetworkError' })],
+    ['GeolocationError (사용자가 권한 거부)', report({ tag: 'GeolocationError' })],
+    ['HttpError 503 (상대 서버 장애)', report({ tag: 'HttpError', status: 503 })],
+    ['status 없는 HttpError', report({ tag: 'HttpError' })],
+  ])('고칠 코드가 없으면 이슈를 만들지 않는다 — %s', (_label, input) => {
+    expect(issueKeyOf(input)).toBeNull()
+  })
+
+  it('모르는 태그는 전부 Unexpected 하나로 모인다', () => {
+    expect(issueKeyOf(report({ tag: 'TypeError' }))).toBe(UNEXPECTED_KEY)
+    expect(issueKeyOf(report({ tag: 'UnknownError' }))).toBe(UNEXPECTED_KEY)
+    expect(issueKeyOf(report({ tag: 'WhateverAttackerSends' }))).toBe(
+      UNEXPECTED_KEY
+    )
+  })
+
+  it('어떤 입력을 넣어도 만들 수 있는 이슈는 5종뿐이다', () => {
+    const keys = new Set<string | null>()
+
+    for (let i = 0; i < 500; i += 1) {
+      keys.add(issueKeyOf(report({ tag: `Attack${i}`, message: `변형 ${i}` })))
+      keys.add(issueKeyOf(report({ tag: 'HttpError', status: 400 + (i % 200) })))
+    }
+
+    keys.delete(null)
+    expect([...keys]).toEqual([UNEXPECTED_KEY, 'HttpError'])
   })
 })
 
-describe('fingerprintOf', () => {
-  it('좌표·지역코드만 다른 같은 원인을 하나로 묶는다', () => {
-    const a = fingerprintOf(
-      report({
-        message:
-          'weather 응답이 스키마와 일치하지 않습니다 (https://x/api/weather/today/02610114) issues=pm10: Expected number',
-      })
-    )
-    const b = fingerprintOf(
-      report({
-        message:
-          'weather 응답이 스키마와 일치하지 않습니다 (https://x/api/weather/today/11710250) issues=pm10: Expected number',
-      })
-    )
-
-    expect(a).toBe(b)
+describe('issueTitleOf', () => {
+  it('키마다 고정된 제목을 준다', () => {
+    expect(issueTitleOf('SchemaError')).toContain('[SchemaError]')
+    expect(issueTitleOf(UNEXPECTED_KEY)).toContain('[Unexpected]')
   })
 
-  it('원인이 다르면 다른 지문이 된다', () => {
-    const pm10 = fingerprintOf(report({ message: 'issues=pm10: Expected number' }))
-    const temp = fingerprintOf(
-      report({ message: 'issues=temperature: Expected number' })
-    )
-
-    expect(pm10).not.toBe(temp)
-  })
-
-  it('태그가 다르면 다른 지문이 된다', () => {
-    expect(fingerprintOf(report({ tag: 'SchemaError' }))).not.toBe(
-      fingerprintOf(report({ tag: 'EmptyResultError' }))
-    )
-  })
-
-  it('숫자만 흔들어 이슈를 늘리려는 시도를 같은 지문으로 접는다', () => {
-    const base = fingerprintOf(report({ message: 'attack 1' }))
-
-    for (let i = 2; i < 50; i += 1) {
-      expect(fingerprintOf(report({ message: `attack ${i}` }))).toBe(base)
-    }
+  it('모르는 키는 Unexpected 제목으로 떨어진다', () => {
+    expect(issueTitleOf('없는키')).toBe(issueTitleOf(UNEXPECTED_KEY))
   })
 })

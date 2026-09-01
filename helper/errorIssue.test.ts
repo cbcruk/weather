@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import type { ErrorReport } from './errorReport'
-import { fingerprintOf } from './errorIssuePolicy'
+
 
 const REPO = 'cbcruk/weather'
 
@@ -13,12 +13,8 @@ function report(overrides: Partial<ErrorReport> = {}): ErrorReport {
   }
 }
 
-function issueWith(fingerprint: string, state: 'open' | 'closed', number = 7) {
-  return {
-    number,
-    state,
-    body: `<!-- error-fingerprint: ${fingerprint} -->\n본문`,
-  }
+function issueWith(key: string, state: 'open' | 'closed', number = 7) {
+  return { number, state, body: `<!-- error-key: ${key} -->\n본문` }
 }
 
 let fetchMock: ReturnType<typeof vi.fn>
@@ -72,7 +68,7 @@ describe('upsertErrorIssue', () => {
     expect(String(fetchMock.mock.calls[0][0])).not.toContain('/search/')
   })
 
-  it('같은 지문이 없으면 이슈를 만든다', async () => {
+  it('해당 태그의 이슈가 없으면 만든다', async () => {
     respondWith([])
 
     await upsertErrorIssue(report())
@@ -81,12 +77,34 @@ describe('upsertErrorIssue', () => {
     const body = JSON.parse(String(created[1].body))
 
     expect(body.title).toContain('[SchemaError]')
-    expect(body.body).toContain(fingerprintOf(report()))
+    expect(body.body).toContain('<!-- error-key: SchemaError -->')
     expect(body.labels).toContain('auto:error')
   })
 
+  it('이슈 대상이 아닌 태그는 조회조차 하지 않는다', async () => {
+    respondWith([])
+
+    await upsertErrorIssue(report({ tag: 'GeolocationError' }))
+    await upsertErrorIssue(report({ tag: 'NetworkError' }))
+
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('같은 태그의 다른 메시지는 같은 이슈에 코멘트로 쌓인다', async () => {
+    respondWith([issueWith('SchemaError', 'open')])
+
+    await upsertErrorIssue(report({ message: 'pm10: Expected number' }))
+    await upsertErrorIssue(report({ message: 'temperature: Expected number' }))
+
+    const posts = callsTo('POST')
+    expect(posts).toHaveLength(2)
+    posts.forEach((post) => {
+      expect(String(post[0])).toContain('/issues/7/comments')
+    })
+  })
+
   it('열린 이슈가 있으면 새로 만들지 않고 코멘트만 단다', async () => {
-    respondWith([issueWith(fingerprintOf(report()), 'open')])
+    respondWith([issueWith('SchemaError', 'open')])
 
     await upsertErrorIssue(report())
 
@@ -97,7 +115,7 @@ describe('upsertErrorIssue', () => {
   })
 
   it('닫힌 이슈가 재발하면 reopen 하고 재발을 알린다', async () => {
-    respondWith([issueWith(fingerprintOf(report()), 'closed')])
+    respondWith([issueWith('SchemaError', 'closed')])
 
     await upsertErrorIssue(report())
 
@@ -110,9 +128,8 @@ describe('upsertErrorIssue', () => {
   })
 
   it('PR은 이슈로 오인하지 않는다', async () => {
-    const fingerprint = fingerprintOf(report())
     respondWith([
-      { ...issueWith(fingerprint, 'open', 99), pull_request: { url: 'x' } },
+      { ...issueWith('SchemaError', 'open', 99), pull_request: { url: 'x' } },
     ])
 
     await upsertErrorIssue(report())
@@ -120,16 +137,6 @@ describe('upsertErrorIssue', () => {
     // PR을 걸렀으므로 새 이슈를 만든다.
     expect(String(callsTo('POST')[0][0])).toContain(`/repos/${REPO}/issues`)
     expect(String(callsTo('POST')[0][0])).not.toContain('/comments')
-  })
-
-  it('시간당 생성 상한을 넘으면 이슈를 만들지 않는다', async () => {
-    respondWith([])
-
-    for (let i = 0; i < 9; i += 1) {
-      await upsertErrorIssue(report({ message: `서로 다른 원인 ${'x'.repeat(i)}` }))
-    }
-
-    expect(callsTo('POST')).toHaveLength(5)
   })
 
   it('GitHub API 실패는 throw 해서 호출부가 로깅하도록 둔다', async () => {

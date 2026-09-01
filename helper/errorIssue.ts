@@ -1,22 +1,12 @@
 import 'server-only'
 import { ErrorReport } from './errorReport'
-import { fingerprintOf } from './errorIssuePolicy'
+import { issueKeyOf, issueTitleOf } from './errorIssuePolicy'
 
 const LABEL = 'auto:error'
 const API = 'https://api.github.com'
 
-/**
- * 인스턴스당 시간당 새 이슈 생성 상한.
- *
- * /api/report 는 공개 엔드포인트다. 지문 정규화가 대부분의 변형을 접지만,
- * 그걸 뚫는 입력이 있어도 저장소가 이슈로 뒤덮이지 않도록 마지막 방어선을 둔다.
- * 상한을 넘으면 이슈는 건너뛰고 webhook 알림만 나간다.
- */
-const CREATE_BUDGET = { max: 5, windowMs: 60 * 60 * 1000 }
-let budget = { until: 0, count: 0 }
-
-function marker(fingerprint: string) {
-  return `<!-- error-fingerprint: ${fingerprint} -->`
+function marker(key: string) {
+  return `<!-- error-key: ${key} -->`
 }
 
 type Issue = {
@@ -59,75 +49,64 @@ async function gh<T>(
   return response.json() as Promise<T>
 }
 
-function withinBudget() {
-  const now = Date.now()
-
-  if (budget.until <= now) {
-    budget = { until: now + CREATE_BUDGET.windowMs, count: 0 }
-  }
-
-  return budget.count < CREATE_BUDGET.max
-}
-
-function body(report: ErrorReport, fingerprint: string) {
+function occurrence(report: ErrorReport) {
   return [
-    marker(fingerprint),
-    '',
     '```',
     report.message,
     '```',
-    '',
-    `- source: \`${report.source}\``,
-    report.path ? `- path: \`${report.path}\`` : null,
-    report.status ? `- status: \`${report.status}\`` : null,
-    `- 최초 관측: ${new Date().toISOString()}`,
-    '',
-    '_에러 리포터가 자동으로 만든 이슈입니다._',
-  ]
-    .filter(Boolean)
-    .join('\n')
+    [
+      `source: \`${report.source}\``,
+      report.path ? `path: \`${report.path}\`` : null,
+      report.status ? `status: \`${report.status}\`` : null,
+      new Date().toISOString(),
+    ]
+      .filter(Boolean)
+      .join(' · '),
+  ].join('\n')
 }
 
 /**
- * 지문이 같은 이슈를 찾아 상태를 갱신한다.
+ * 태그에 해당하는 이슈를 찾아 상태를 갱신한다.
  *
  * - 없음   → 생성
- * - open   → 재발 코멘트
+ * - open   → 발생 코멘트
  * - closed → reopen + 재발 코멘트. 고쳤다고 판단한 게 다시 났다는 신호다.
  *
  * 검색 API(30/분) 대신 라벨 필터 조회(core, 5000/시간)를 쓴다.
  */
 export async function upsertErrorIssue(report: ErrorReport): Promise<void> {
   const conf = config()
+  const key = issueKeyOf(report)
 
-  if (!conf) {
+  if (!conf || !key) {
     return
   }
 
   const { repo, token } = conf
-  const fingerprint = fingerprintOf(report)
-
   const issues = await gh<Issue[]>(
     `/repos/${repo}/issues?labels=${LABEL}&state=all&per_page=100&sort=updated&direction=desc`,
     token
   )
   // 이 엔드포인트는 PR도 함께 반환하므로 걸러낸다.
   const existing = issues.find(
-    (issue) => !issue.pull_request && issue.body?.includes(marker(fingerprint))
+    (issue) => !issue.pull_request && issue.body?.includes(marker(key))
   )
 
   if (!existing) {
-    if (!withinBudget()) {
-      return
-    }
-
-    budget.count += 1
-
     await gh(`/repos/${repo}/issues`, token, {
       method: 'POST',
       body: JSON.stringify({
-        title: `[${report.tag}] ${report.message.split('\n')[0].slice(0, 120)}`,
-        body: body(report, fingerprint),
+        title: issueTitleOf(key),
+        body: [
+          marker(key),
+          '',
+          '이 태그의 에러가 발생할 때마다 아래에 코멘트가 쌓입니다.',
+          '수정 후 이슈를 닫으면, 다시 발생했을 때 자동으로 다시 열립니다.',
+          '',
+          '---',
+          '',
+          occurrence(report),
+        ].join('\n'),
         labels: [LABEL, 'bug'],
       }),
     })
@@ -152,10 +131,7 @@ export async function upsertErrorIssue(report: ErrorReport): Promise<void> {
           ? '🔁 **닫힌 뒤 재발했습니다.** 이전 수정이 이 경로를 덮지 못했습니다.'
           : '🔔 다시 관측되었습니다.',
         '',
-        '```',
-        report.message,
-        '```',
-        `- source: \`${report.source}\` · ${new Date().toISOString()}`,
+        occurrence(report),
       ].join('\n'),
     }),
   })
