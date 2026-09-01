@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { weather } from './middleware/weather'
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   return weather(request)
 }
 
