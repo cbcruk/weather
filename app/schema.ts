@@ -22,7 +22,7 @@ export type SearchParamsSchema = z.infer<typeof searchParamsSchema>
  * 필드를 새로 쓰기 시작할 때만 여기에 추가하면 된다.
  */
 
-const geocodeResultSchema = z.object({
+export const geocodeResultSchema = z.object({
   name: z.string(),
   code: z.object({
     mappingId: z.string(),
