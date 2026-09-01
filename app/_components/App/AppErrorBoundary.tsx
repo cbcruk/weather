@@ -3,11 +3,10 @@
 import { ErrorInfo, PropsWithChildren } from 'react'
 import { QueryErrorResetBoundary } from '@tanstack/react-query'
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
-import { formatError } from '@/helper/errors'
 
 function logError(error: unknown, info: ErrorInfo) {
   console.error(
-    `[AppErrorBoundary]\n${formatError(error)}`,
+    `[AppErrorBoundary]\n${String(error)}`,
     info.componentStack
   )
 }
@@ -21,7 +20,7 @@ function AppErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
       <p className="font-semibold">날씨 정보를 불러오지 못했습니다.</p>
       {process.env.NODE_ENV === 'development' && (
         <pre className="max-w-full overflow-x-auto whitespace-pre-wrap text-left text-xs opacity-70">
-          {formatError(error)}
+          {String(error)}
         </pre>
       )}
       <button

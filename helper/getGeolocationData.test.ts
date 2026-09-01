@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
+import { Effect } from 'effect'
 import {
   getFetchLocationGeocodeUrl,
   getGeolocationData,
@@ -13,7 +14,9 @@ describe('getGeolocationData', () => {
       async () => new Response(JSON.stringify(GEOCODE))
     )
     const coords = '127.2236579,37.3728211'
-    const geocode = await getGeolocationData(coords, fetchLocationGeocode)
+    const geocode = await Effect.runPromise(
+      getGeolocationData(coords, fetchLocationGeocode)
+    )
 
     expect(fetchLocationGeocode).toHaveBeenCalled()
     expect(fetchLocationGeocode).toHaveBeenCalledWith(
@@ -31,11 +34,12 @@ describe('getGeolocationData', () => {
     )
     const coords = '127.2236579,37.3728211'
 
-    const error = await getGeolocationData(coords, fetchLocationGeocode).catch(
-      (e) => e
-    )
+    const error = await Effect.runPromise(
+      getGeolocationData(coords, fetchLocationGeocode)
+    ).catch((e) => e)
 
     expect(error).toBeInstanceOf(EmptyResultError)
-    expect(error.context).toMatchObject({ resource: 'geocode', coords })
+    expect(error.resource).toBe('geocode')
+    expect(error.message).toContain(coords)
   })
 })

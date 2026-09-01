@@ -6,7 +6,7 @@ import { HttpError } from '@/helper/errors'
 
 const error = new HttpError({
   resource: 'weather',
-  url: new URL('https://weather.example/api/weather/today/02610114'),
+  url: 'https://weather.example/api/weather/today/02610114',
   status: 503,
   statusText: 'Service Unavailable',
   body: 'upstream down',
@@ -45,7 +45,7 @@ describe('AppErrorBoundary', () => {
       .toBeVisible()
   })
 
-  it('formatError로 태그와 컨텍스트를 로깅한다', async () => {
+  it('태그와 컨텍스트를 로깅한다', async () => {
     const consoleError = vi
       .spyOn(console, 'error')
       .mockImplementation(() => {})
@@ -60,7 +60,8 @@ describe('AppErrorBoundary', () => {
 
     expect(logged).toContain('[AppErrorBoundary]')
     expect(logged).toContain('HttpError')
-    expect(logged).toContain('"status":503')
+    expect(logged).toContain('503 Service Unavailable')
+    expect(logged).toContain('upstream down')
   })
 
   it('다시 시도를 누르면 자식을 다시 렌더한다', async () => {

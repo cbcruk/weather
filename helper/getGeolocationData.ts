@@ -1,3 +1,4 @@
+import { Effect } from 'effect'
 import { geocodeResponseSchema } from '@/app/schema'
 import { DEFAULT_HEADERS } from '@/constants'
 import { EmptyResultError } from './errors'
@@ -13,29 +14,28 @@ export function getFetchLocationGeocodeUrl(coords: string) {
   return url
 }
 
-export async function getGeolocationData(
+export const getGeolocationData = (
   coords: string,
   fetchLocationGeocode = fetch
-) {
-  const url = getFetchLocationGeocodeUrl(coords)
-  const { results } = await fetchJson({
-    resource: RESOURCE,
-    url,
-    schema: geocodeResponseSchema,
-    headers: DEFAULT_HEADERS,
-    fetchImpl: fetchLocationGeocode,
-  })
-  const [geocode] = results
-
-  // results가 비면 예전에는 undefined가 그대로 반환되어,
-  // 이를 사용하는 getWeatherDataByGeolocation에서 엉뚱한 TypeError로 터졌다.
-  if (!geocode) {
-    throw new EmptyResultError({
+) =>
+  Effect.gen(function* () {
+    const url = getFetchLocationGeocodeUrl(coords)
+    const { results } = yield* fetchJson({
       resource: RESOURCE,
       url,
-      context: { coords },
+      schema: geocodeResponseSchema,
+      headers: DEFAULT_HEADERS,
+      fetchImpl: fetchLocationGeocode,
     })
-  }
+    const [geocode] = results
 
-  return geocode
-}
+    if (!geocode) {
+      return yield* new EmptyResultError({
+        resource: RESOURCE,
+        url: url.toString(),
+        detail: `coords=${coords}`,
+      })
+    }
+
+    return geocode
+  })

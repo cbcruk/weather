@@ -1,3 +1,4 @@
+import { Effect } from 'effect'
 import { DEFAULT_HEADERS } from '@/constants'
 import { GeocodeSchema, weatherResponseSchema } from '@/app/schema'
 import { fetchJson } from './fetchJson'
@@ -8,18 +9,19 @@ type Params = {
   mappingId: GeocodeSchema['code']['mappingId']
 }
 
-export async function getWeatherData(
+export const getWeatherData = (
   { mappingId }: Params,
   fetchWeatherData = fetch
-) {
-  const url = new URL(`${process.env.API_URL}/api/weather/today/${mappingId}`)
-  const { halfdayForecast, shortTermForecasts } = await fetchJson({
+) =>
+  fetchJson({
     resource: RESOURCE,
-    url,
+    url: new URL(`${process.env.API_URL}/api/weather/today/${mappingId}`),
     schema: weatherResponseSchema,
     headers: DEFAULT_HEADERS,
     fetchImpl: fetchWeatherData,
-  })
-
-  return { halfdayForecast, shortTermForecasts }
-}
+  }).pipe(
+    Effect.map(({ halfdayForecast, shortTermForecasts }) => ({
+      halfdayForecast,
+      shortTermForecasts,
+    }))
+  )
