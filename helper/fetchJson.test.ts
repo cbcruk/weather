@@ -1,45 +1,36 @@
 import { describe, it, expect, vi } from 'vitest'
+import { Effect } from 'effect'
 import { z } from 'zod'
 import { fetchJson } from './fetchJson'
-import {
-  HttpError,
-  JsonParseError,
-  NetworkError,
-  SchemaError,
-  formatError,
-} from './errors'
+import { HttpError, JsonParseError, NetworkError, SchemaError } from './errors'
 
 const schema = z.object({ name: z.string() })
 const url = new URL('https://example.test/api/thing')
 
-function params(fetchImpl: typeof fetch) {
-  return { resource: 'thing', url, schema, fetchImpl }
+function run(fetchImpl: typeof fetch) {
+  return Effect.runPromise(
+    fetchJson({ resource: 'thing', url, schema, fetchImpl })
+  )
 }
 
 describe('fetchJson', () => {
   it('성공하면 파싱된 데이터를 반환한다', async () => {
     const fetchImpl = vi.fn(async () => new Response('{"name":"weather"}'))
 
-    await expect(fetchJson(params(fetchImpl))).resolves.toEqual({
-      name: 'weather',
-    })
+    await expect(run(fetchImpl)).resolves.toEqual({ name: 'weather' })
   })
 
-  it('fetch가 실패하면 NetworkError로 감싸고 원인을 유지한다', async () => {
-    const cause = new Error('ECONNREFUSED')
+  it('fetch가 실패하면 NetworkError로 감싸고 원인을 메시지에 남긴다', async () => {
     const fetchImpl = vi.fn(async () => {
-      throw cause
+      throw new Error('ECONNREFUSED')
     })
 
-    const error = await fetchJson(params(fetchImpl)).catch((e) => e)
+    const error = await run(fetchImpl).catch((e) => e)
 
     expect(error).toBeInstanceOf(NetworkError)
-    expect(error.tag).toBe('NetworkError')
-    expect(error.cause).toBe(cause)
-    expect(error.context).toMatchObject({
-      resource: 'thing',
-      url: url.toString(),
-    })
+    expect(error._tag).toBe('NetworkError')
+    expect(error.message).toContain('https://example.test/api/thing')
+    expect(error.message).toContain('ECONNREFUSED')
   })
 
   it('2xx가 아니면 status와 본문을 담은 HttpError를 던진다', async () => {
@@ -51,15 +42,12 @@ describe('fetchJson', () => {
         })
     )
 
-    const error = await fetchJson(params(fetchImpl)).catch((e) => e)
+    const error = await run(fetchImpl).catch((e) => e)
 
     expect(error).toBeInstanceOf(HttpError)
     expect(error.status).toBe(503)
-    expect(error.context).toMatchObject({
-      resource: 'thing',
-      status: 503,
-      body: 'service unavailable',
-    })
+    expect(error.message).toContain('503 Service Unavailable')
+    expect(error.message).toContain('service unavailable')
   })
 
   it('본문이 JSON이 아니면 본문을 담은 JsonParseError를 던진다', async () => {
@@ -67,34 +55,45 @@ describe('fetchJson', () => {
       async () => new Response('<!doctype html><title>502</title>')
     )
 
-    const error = await fetchJson(params(fetchImpl)).catch((e) => e)
+    const error = await run(fetchImpl).catch((e) => e)
 
     expect(error).toBeInstanceOf(JsonParseError)
-    expect(error.context.body).toContain('<!doctype html>')
-    expect(error.cause).toBeInstanceOf(SyntaxError)
+    expect(error.body).toContain('<!doctype html>')
+    expect(error.message).toContain('<!doctype html>')
   })
 
   it('스키마가 어긋나면 어긋난 경로를 담은 SchemaError를 던진다', async () => {
     const fetchImpl = vi.fn(async () => new Response('{"name":42}'))
 
-    const error = await fetchJson(params(fetchImpl)).catch((e) => e)
+    const error = await run(fetchImpl).catch((e) => e)
 
     expect(error).toBeInstanceOf(SchemaError)
-    expect(error.context.issueCount).toBe(1)
-    expect(error.context.issues[0]).toContain('name')
+    expect(error.issues).toHaveLength(1)
+    expect(error.message).toContain('name')
   })
 
-  it('formatError가 태그, 컨텍스트, 원인 체인을 한 번에 보여준다', async () => {
-    const fetchImpl = vi.fn(async () => {
-      throw new Error('socket hang up')
-    })
+  it('runPromise는 FiberFailure가 아니라 원본 태그 에러를 reject 한다', async () => {
+    const fetchImpl = vi.fn(async () => new Response('not json'))
 
-    const error = await fetchJson(params(fetchImpl)).catch((e) => e)
-    const formatted = formatError(error)
+    const error = await run(fetchImpl).catch((e) => e)
 
-    expect(formatted).toContain('NetworkError')
-    expect(formatted).toContain('example.test')
-    expect(formatted).toContain('caused by')
-    expect(formatted).toContain('socket hang up')
+    // react-query와 ErrorBoundary가 이 값을 그대로 받는다.
+    expect(error.constructor.name).toBe('JsonParseError')
+    expect(error.name).toBe('JsonParseError')
+    expect(String(error)).toMatch(/^JsonParseError: thing 응답이 JSON이 아닙니다/)
+  })
+
+  it('실패 종류가 타입에 드러난다', () => {
+    const program = fetchJson({ resource: 'thing', url, schema })
+    type E =
+      typeof program extends Effect.Effect<unknown, infer E> ? E : never
+    const tags: Array<E['_tag']> = [
+      'NetworkError',
+      'HttpError',
+      'JsonParseError',
+      'SchemaError',
+    ]
+
+    expect(tags).toHaveLength(4)
   })
 })

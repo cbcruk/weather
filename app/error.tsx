@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect } from 'react'
-import { formatError } from '@/helper/errors'
 
 type Props = {
   error: Error & { digest?: string }
@@ -14,7 +13,7 @@ type Props = {
 export default function Error({ error, reset }: Props) {
   useEffect(() => {
     console.error(
-      `[app/error]${error.digest ? ` digest=${error.digest}` : ''}\n${formatError(error)}`
+      `[app/error]${error.digest ? ` digest=${error.digest}` : ''}\n${String(error)}`
     )
   }, [error])
 
@@ -26,7 +25,7 @@ export default function Error({ error, reset }: Props) {
       <p className="font-semibold">문제가 발생했습니다.</p>
       {process.env.NODE_ENV === 'development' && (
         <pre className="max-w-full overflow-x-auto whitespace-pre-wrap text-left text-xs opacity-70">
-          {formatError(error)}
+          {String(error)}
         </pre>
       )}
       <button

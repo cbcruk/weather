@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
+import { Effect } from 'effect'
 import { getWeatherData } from './getWeatherData'
 import { DEFAULT_HEADERS } from '@/constants'
 import { WEATHER_DATA } from './getWeatherData.fixture'
@@ -11,7 +12,7 @@ describe('getWeatherData', () => {
 
     const mappingId = '02610114'
 
-    await getWeatherData({ mappingId }, fetchWeatherData)
+    await Effect.runPromise(getWeatherData({ mappingId }, fetchWeatherData))
 
     expect(fetchWeatherData).toHaveBeenCalled()
     expect(fetchWeatherData).toHaveBeenCalledWith(
