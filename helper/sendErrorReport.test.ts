@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { sendErrorReport } from './sendErrorReport'
+import * as errorIssue from './errorIssue'
 import type { ErrorReport } from './errorReport'
 
 const WEBHOOK = 'https://hooks.example/webhook'
@@ -84,6 +85,38 @@ describe('sendErrorReport', () => {
 
     expect(fetchMock).not.toHaveBeenCalled()
     expect(String(consoleError.mock.calls[0][0])).toContain('NoWebhook')
+    consoleError.mockRestore()
+  })
+
+  it('코드 수정이 필요한 에러만 이슈로 넘긴다', async () => {
+    const upsert = vi
+      .spyOn(errorIssue, 'upsertErrorIssue')
+      .mockResolvedValue(undefined)
+
+    await sendErrorReport(report({ tag: 'SchemaError' }))
+    expect(upsert).toHaveBeenCalledOnce()
+
+    upsert.mockClear()
+    await sendErrorReport(report({ tag: 'NetworkError' }))
+    expect(upsert).not.toHaveBeenCalled()
+
+    upsert.mockRestore()
+  })
+
+  it('이슈 전송이 실패해도 webhook은 나간다', async () => {
+    const upsert = vi
+      .spyOn(errorIssue, 'upsertErrorIssue')
+      .mockRejectedValue(new Error('GitHub 401'))
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    await sendErrorReport(report({ tag: 'IssueSinkDown' }))
+
+    expect(fetchMock).toHaveBeenCalledOnce()
+    expect(
+      consoleError.mock.calls.some((call) => String(call[0]).includes('issue'))
+    ).toBe(true)
+
+    upsert.mockRestore()
     consoleError.mockRestore()
   })
 

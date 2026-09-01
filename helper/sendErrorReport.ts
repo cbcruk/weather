@@ -1,5 +1,7 @@
 import 'server-only'
 import { ErrorReport } from './errorReport'
+import { needsCodeFix } from './errorIssuePolicy'
+import { upsertErrorIssue } from './errorIssue'
 
 const WINDOW_MS = 5 * 60 * 1000
 
@@ -33,6 +35,32 @@ function format(report: ErrorReport, repeated: number) {
   return lines.join('\n')
 }
 
+async function sendWebhook(text: string): Promise<void> {
+  const webhookUrl = process.env.ERROR_WEBHOOK_URL
+
+  // webhook이 설정되지 않은 환경(로컬, 미설정 배포)에서는 로그로 떨어뜨린다.
+  if (!webhookUrl) {
+    console.error(text)
+    return
+  }
+
+  await fetch(webhookUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    // Discord는 content, Slack은 text를 읽는다. 둘 다 실어 보내면
+    // 어느 쪽 webhook이든 그대로 동작한다.
+    body: JSON.stringify({ content: text, text }),
+  })
+}
+
+/**
+ * 두 수집처로 나눠 보낸다. 역할이 다르다.
+ *
+ * - webhook: 모든 에러. "지금 뭔가 났다"는 실시간 알림.
+ * - issue:   고칠 코드가 우리 쪽에 있는 에러만. "아직 안 고쳐졌다"는 상태.
+ *
+ * 한쪽이 실패해도 다른 쪽은 보내야 하므로 allSettled로 묶는다.
+ */
 export async function sendErrorReport(report: ErrorReport): Promise<void> {
   const key = `${report.source}:${report.tag}`
   const now = Date.now()
@@ -46,23 +74,16 @@ export async function sendErrorReport(report: ErrorReport): Promise<void> {
   suppressedUntil.set(key, { until: now + WINDOW_MS, count: 0 })
 
   const text = format(report, entry?.count ?? 0)
-  const webhookUrl = process.env.ERROR_WEBHOOK_URL
 
-  // webhook이 설정되지 않은 환경(로컬, 미설정 배포)에서는 로그로 떨어뜨린다.
-  if (!webhookUrl) {
-    console.error(text)
-    return
-  }
+  const results = await Promise.allSettled([
+    sendWebhook(text),
+    needsCodeFix(report) ? upsertErrorIssue(report) : Promise.resolve(),
+  ])
 
-  try {
-    await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      // Discord는 content, Slack은 text를 읽는다. 둘 다 실어 보내면
-      // 어느 쪽 webhook이든 그대로 동작한다.
-      body: JSON.stringify({ content: text, text }),
-    })
-  } catch (cause) {
-    console.error('[sendErrorReport] webhook 전송 실패', cause, '\n', text)
-  }
+  results.forEach((result, index) => {
+    if (result.status === 'rejected') {
+      const sink = index === 0 ? 'webhook' : 'issue'
+      console.error(`[sendErrorReport] ${sink} 전송 실패`, result.reason, '\n', text)
+    }
+  })
 }
