@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { errorReportSchema } from '@/helper/errorReport'
 import { sendErrorReport } from '@/helper/sendErrorReport'
+import { afterResponse } from '@/helper/afterResponse'
 
 const MAX_BODY_BYTES = 4_000
 const RATE_LIMIT = { max: 10, windowMs: 60_000 }
@@ -59,11 +60,13 @@ export async function POST(request: NextRequest) {
     return new NextResponse(null, { status: 400 })
   }
 
-  await sendErrorReport({
-    ...parsed.data,
-    message: neutralizeMentions(parsed.data.message),
-    path: parsed.data.path && neutralizeMentions(parsed.data.path),
-  })
+  afterResponse(
+    sendErrorReport({
+      ...parsed.data,
+      message: neutralizeMentions(parsed.data.message),
+      path: parsed.data.path && neutralizeMentions(parsed.data.path),
+    })
+  )
 
   return new NextResponse(null, { status: 204 })
 }

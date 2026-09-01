@@ -1,9 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
+import type { ErrorReport } from '@/helper/errorReport'
 
-const sendErrorReport = vi.fn()
+const sendErrorReport = vi.fn<(report: ErrorReport) => Promise<void>>(
+  async () => {}
+)
 vi.mock('@/helper/sendErrorReport', () => ({
-  sendErrorReport: (...args: unknown[]) => sendErrorReport(...args),
+  sendErrorReport: (report: ErrorReport) => sendErrorReport(report),
 }))
 
 const { POST } = await import('./route')
@@ -34,7 +37,7 @@ describe('POST /api/report', () => {
 
     expect(res.status).toBe(204)
     expect(sendErrorReport).toHaveBeenCalledOnce()
-    expect(sendErrorReport.mock.calls[0][0].tag).toBe('SchemaError')
+    expect(sendErrorReport.mock.calls[0]?.[0].tag).toBe('SchemaError')
   })
 
   it('@everyone 멘션을 무력화한다', async () => {
@@ -43,7 +46,7 @@ describe('POST /api/report', () => {
       '2.2.2.2'
     )
 
-    const sent = sendErrorReport.mock.calls[0][0].message
+    const sent = sendErrorReport.mock.calls[0]![0].message
     expect(sent).not.toMatch(/@everyone/)
     expect(sent).not.toMatch(/@here/)
   })

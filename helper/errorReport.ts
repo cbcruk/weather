@@ -12,6 +12,7 @@ export const errorReportSchema = z.object({
   source: z.nativeEnum(ERROR_SOURCE),
   path: z.string().max(500).optional(),
   digest: z.string().max(64).optional(),
+  status: z.number().int().min(100).max(599).optional(),
 })
 
 export type ErrorReport = z.infer<typeof errorReportSchema>
@@ -42,6 +43,16 @@ function messageOf(error: unknown) {
   return String(error)
 }
 
+function statusOf(error: unknown) {
+  if (typeof error === 'object' && error !== null && 'status' in error) {
+    const status = (error as { status: unknown }).status
+
+    return typeof status === 'number' ? status : undefined
+  }
+
+  return undefined
+}
+
 export function toErrorReport(
   error: unknown,
   source: ErrorReport['source'],
@@ -51,6 +62,7 @@ export function toErrorReport(
     tag: tagOf(error),
     message: redactCoords(messageOf(error)).slice(0, 1000),
     source,
+    status: statusOf(error),
     ...extra,
   }
 }
