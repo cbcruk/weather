@@ -4,6 +4,8 @@ import { SearchParamsSchema } from './schema'
 import { getQueryClient } from '@/helper/getQueryClient'
 import { weatherOptions } from '@/queries/weather'
 import { AppSpring } from './_components/App/AppSpring'
+import { toErrorReport } from '@/helper/errorReport'
+import { sendErrorReport } from '@/helper/sendErrorReport'
 
 type Props = {
   searchParams: Promise<SearchParamsSchema>
@@ -22,6 +24,9 @@ export default async function Home({ searchParams }: Props) {
 
     if (error) {
       console.error(`[page] weather 프리페치 실패\n${String(error)}`)
+      void sendErrorReport(
+        toErrorReport(error, 'server', { path: 'prefetch weather' })
+      )
     }
   })
 
