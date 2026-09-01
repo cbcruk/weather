@@ -1,59 +1,18 @@
 'use client'
 
-import React from 'react'
+import { ErrorInfo, PropsWithChildren } from 'react'
 import { QueryErrorResetBoundary } from '@tanstack/react-query'
+import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
 import { formatError } from '@/helper/errors'
 
-type FallbackProps = {
-  error: Error
-  reset: () => void
+function logError(error: unknown, info: ErrorInfo) {
+  console.error(
+    `[AppErrorBoundary]\n${formatError(error)}`,
+    info.componentStack
+  )
 }
 
-type ErrorBoundaryProps = React.PropsWithChildren<{
-  onReset: () => void
-  fallback: React.ComponentType<FallbackProps>
-}>
-
-type ErrorBoundaryState = {
-  error: Error | null
-}
-
-class ErrorBoundary extends React.Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
-  state: ErrorBoundaryState = { error: null }
-
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { error }
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error(
-      `[AppErrorBoundary]\n${formatError(error)}`,
-      errorInfo.componentStack
-    )
-  }
-
-  reset = () => {
-    this.props.onReset()
-    this.setState({ error: null })
-  }
-
-  render() {
-    const { error } = this.state
-
-    if (error) {
-      const Fallback = this.props.fallback
-
-      return <Fallback error={error} reset={this.reset} />
-    }
-
-    return this.props.children
-  }
-}
-
-function AppErrorFallback({ error, reset }: FallbackProps) {
+function AppErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
     <div
       role="alert"
@@ -67,7 +26,7 @@ function AppErrorFallback({ error, reset }: FallbackProps) {
       )}
       <button
         type="button"
-        onClick={reset}
+        onClick={resetErrorBoundary}
         className="cursor-pointer rounded border px-4 py-2 text-sm"
       >
         다시 시도
@@ -80,15 +39,18 @@ function AppErrorFallback({ error, reset }: FallbackProps) {
  * react-query의 reset과 묶인 에러 경계.
  * useSuspenseQuery가 던진 에러를 여기서 받아 로그를 남기고, 재시도 시 쿼리를 다시 실행한다.
  */
-export function AppErrorBoundary({ children }: React.PropsWithChildren) {
+export function AppErrorBoundary({ children }: PropsWithChildren) {
   return (
     <QueryErrorResetBoundary>
       {({ reset }) => (
-        <ErrorBoundary onReset={reset} fallback={AppErrorFallback}>
+        <ErrorBoundary
+          onReset={reset}
+          onError={logError}
+          FallbackComponent={AppErrorFallback}
+        >
           {children}
         </ErrorBoundary>
       )}
     </QueryErrorResetBoundary>
   )
 }
-
