@@ -47,8 +47,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "vitest",
-    "test:browser": "vitest --workspace=vitest.workspace.browser.ts",
+    "test": "vitest --project=unit",
+    "test:browser": "vitest --project=browser",
+    "test:all": "vitest",
     "knip": "knip"
   }
 }
