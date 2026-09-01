@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { reportClientError } from '@/helper/reportClientError'
 
 type Props = {
   error: Error & { digest?: string }
@@ -15,6 +16,7 @@ export default function Error({ error, reset }: Props) {
     console.error(
       `[app/error]${error.digest ? ` digest=${error.digest}` : ''}\n${String(error)}`
     )
+    reportClientError(error, 'route', { digest: error.digest })
   }, [error])
 
   return (

@@ -25,7 +25,11 @@ describe('getGeolocationData', () => {
         headers: DEFAULT_HEADERS,
       }
     )
-    expect(geocode).toEqual(GEOCODE.results.at(0))
+    // 스키마가 앱이 쓰는 필드만 남기므로 픽스처와 전체 동등 비교하지 않는다.
+    const [expected] = GEOCODE.results
+    expect(geocode.code.mappingId).toBe(expected.code.mappingId)
+    expect(geocode.region.area1.name).toBe(expected.region.area1.name)
+    expect(geocode.region.area3.name).toBe(expected.region.area3.name)
   })
 
   it('results가 비면 EmptyResultError를 던진다', async () => {

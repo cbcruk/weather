@@ -3,12 +3,11 @@
 import { ErrorInfo, PropsWithChildren } from 'react'
 import { QueryErrorResetBoundary } from '@tanstack/react-query'
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
+import { reportClientError } from '@/helper/reportClientError'
 
 function logError(error: unknown, info: ErrorInfo) {
-  console.error(
-    `[AppErrorBoundary]\n${String(error)}`,
-    info.componentStack
-  )
+  console.error(`[AppErrorBoundary]\n${String(error)}`, info.componentStack)
+  reportClientError(error, 'boundary')
 }
 
 function AppErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
