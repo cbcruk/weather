@@ -14,6 +14,7 @@ import { SearchParamsSchema } from '@/app/schema'
 import { WeatherCompareTemperature } from '../Weather/WeatherCompareTemperature'
 import { WeatherDate } from '../Weather/WeatherDate'
 import { WeatherIcon } from '../Weather/WeatherIcon'
+import { AppErrorBoundary } from './AppErrorBoundary'
 
 export function AppContainer({
   latitude,
@@ -62,5 +63,9 @@ export function AppContainer({
 }
 
 export function App({ children }: PropsWithChildren) {
-  return <Suspense fallback={null}>{children}</Suspense>
+  return (
+    <AppErrorBoundary>
+      <Suspense fallback={null}>{children}</Suspense>
+    </AppErrorBoundary>
+  )
 }

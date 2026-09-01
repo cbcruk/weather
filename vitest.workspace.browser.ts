@@ -4,6 +4,7 @@ export default defineWorkspace([
   {
     extends: 'vitest.config.mts',
     test: {
+      include: ['**/*.browser.test.{ts,tsx}'],
       browser: {
         provider: 'playwright',
         enabled: true,
