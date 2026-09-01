@@ -14,6 +14,7 @@ import { SearchParamsSchema } from '@/app/schema'
 import { WeatherCompareTemperature } from '../Weather/WeatherCompareTemperature'
 import { WeatherDate } from '../Weather/WeatherDate'
 import { WeatherIcon } from '../Weather/WeatherIcon'
+import { WeatherStaleNotice } from '../Weather/WeatherStaleNotice'
 import { AppErrorBoundary } from './AppErrorBoundary'
 
 export function AppContainer({
@@ -48,6 +49,9 @@ export function AppContainer({
           <WeatherGeolocationButton />
         </WeatherArea>
         <WeatherDate />
+        {weatherData.staleAt !== undefined && (
+          <WeatherStaleNotice staleAt={weatherData.staleAt} />
+        )}
         <WeatherTemperature temperature={shortTermForecast.temperature} />
         <WeatherCompareTemperature
           compareTemperature={shortTermForecast.compareTemperature}
