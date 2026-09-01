@@ -83,6 +83,43 @@ describe('fetchJson', () => {
     expect(String(error)).toMatch(/^JsonParseError: thing 응답이 JSON이 아닙니다/)
   })
 
+  describe('재시도', () => {
+    // 지수 백오프가 실제로 걸리므로 실 타이머로 돈다.
+    it.each([
+      ['NetworkError', () => Promise.reject(new Error('ECONNREFUSED'))],
+      ['HttpError 503', async () => new Response('down', { status: 503 })],
+      ['HttpError 429', async () => new Response('slow down', { status: 429 })],
+    ])('일시적 오류는 다시 시도한다 — %s', async (_label, impl) => {
+      const fetchImpl = vi.fn(impl as unknown as typeof fetch)
+
+      await run(fetchImpl).catch(() => {})
+
+      expect(fetchImpl).toHaveBeenCalledTimes(3)
+    })
+
+    it.each([
+      ['HttpError 404', async () => new Response('nope', { status: 404 })],
+      ['SchemaError', async () => new Response('{"name":42}')],
+      ['JsonParseError', async () => new Response('<!doctype html>')],
+    ])('결정적 실패는 즉시 포기한다 — %s', async (_label, impl) => {
+      const fetchImpl = vi.fn(impl as unknown as typeof fetch)
+
+      await run(fetchImpl).catch(() => {})
+
+      expect(fetchImpl).toHaveBeenCalledOnce()
+    })
+
+    it('재시도 중 성공하면 그 결과를 돌려준다', async () => {
+      const fetchImpl = vi
+        .fn<typeof fetch>()
+        .mockResolvedValueOnce(new Response('boom', { status: 503 }))
+        .mockResolvedValueOnce(new Response('{"name":"weather"}'))
+
+      await expect(run(fetchImpl)).resolves.toEqual({ name: 'weather' })
+      expect(fetchImpl).toHaveBeenCalledTimes(2)
+    })
+  })
+
   it('실패 종류가 타입에 드러난다', () => {
     const program = fetchJson({ resource: 'thing', url, schema })
     type E =
