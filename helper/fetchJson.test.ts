@@ -94,6 +94,7 @@ describe('fetchJson', () => {
       'SchemaError',
     ]
 
+    expect(Effect.isEffect(program)).toBe(true)
     expect(tags).toHaveLength(4)
   })
 })
