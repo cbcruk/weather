@@ -1,3 +1,8 @@
+# pnpm 9 는 이 파일을 워크스페이스 정의로만 읽어서 packages 가 없으면 설치가 실패한다.
+# 배포(Vercel)가 pnpm 9 를 쓰므로, 단일 패키지지만 루트를 명시해 둔다.
+packages:
+  - .
+
 allowBuilds:
   core-js-pure: true
   esbuild: true
