@@ -1,6 +1,6 @@
 'use client'
 
-import React, { PropsWithChildren, Suspense } from 'react'
+import React, { PropsWithChildren, Suspense, ViewTransition } from 'react'
 import { AppBack } from './AppBack'
 import { AppFront } from './AppFront'
 import { WeatherMinAndMaxTemperature } from '../Weather/WeatherMinAndMaxTemperature'
@@ -68,8 +68,13 @@ export function AppContainer({
 
 export function App({ children }: PropsWithChildren) {
   return (
-    <AppErrorBoundary>
-      <Suspense fallback={null}>{children}</Suspense>
-    </AppErrorBoundary>
+    // 에러 폴백과 본문, 그리고 Suspense 공개를 모두 이 경계 안에서 교체하므로
+    // 한 번만 감싸면 세 전환이 전부 크로스페이드가 된다.
+    // Transition 과 Suspense 공개에서만 동작한다. 최초 하이드레이션은 해당되지 않는다.
+    <ViewTransition>
+      <AppErrorBoundary>
+        <Suspense fallback={null}>{children}</Suspense>
+      </AppErrorBoundary>
+    </ViewTransition>
   )
 }

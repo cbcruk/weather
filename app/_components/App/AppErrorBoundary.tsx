@@ -1,6 +1,6 @@
 'use client'
 
-import { ErrorInfo, PropsWithChildren } from 'react'
+import { ErrorInfo, PropsWithChildren, startTransition } from 'react'
 import { QueryErrorResetBoundary } from '@tanstack/react-query'
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
 import { reportClientError } from '@/helper/reportClientError'
@@ -24,7 +24,9 @@ function AppErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
       )}
       <button
         type="button"
-        onClick={resetErrorBoundary}
+        // Transition 안에서 재시도하면 쿼리가 다시 suspend 되는 동안 이 폴백이 그대로 남는다.
+        // 그냥 호출하면 빈 화면을 한 번 거친다.
+        onClick={() => startTransition(() => resetErrorBoundary())}
         className="cursor-pointer rounded border px-4 py-2 text-sm"
       >
         다시 시도
