@@ -1,6 +1,8 @@
 import { COOKIES } from '@/constants'
 import { GeolocationError } from '@/helper/errors'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
+import { useTransition } from 'react'
 import Cookies from 'js-cookie'
 
 type Coords = Record<'latitude' | 'longitude', number>
@@ -44,18 +46,35 @@ function getGeolocationFromClient(): Promise<Coords> {
 
 export function useGeolocationMutation() {
   const queryClient = useQueryClient()
+  const router = useRouter()
+  // router.refresh()는 await할 수 없다. transition으로 감싸면 새 좌표의 화면이
+  // 실제로 붙을 때까지 isPending이 유지되고, 그래서 버튼이 먼저 멀쩡한 얼굴로
+  // 돌아가 아무 일도 없었던 것처럼 보이는 일이 없다.
+  const [isRefreshing, startTransition] = useTransition()
   const mutation = useMutation({
     mutationFn: () => getGeolocationFromClient(),
-    onSuccess({ latitude, longitude }) {
-      queryClient.invalidateQueries({
-        queryKey: ['weather'],
-      })
-
+    // onSuccess가 돌려준 Promise가 끝날 때까지 isPending이 유지된다.
+    async onSuccess({ latitude, longitude }) {
       Cookies.set(COOKIES.COORDS, [latitude, longitude].join('_'), {
         expires: 365,
+      })
+
+      // 좌표는 미들웨어가 쿠키를 읽어 searchParams에 넣고 그 값이 쿼리 키가 된다.
+      // 쿠키만 바꾸고 무효화하면 예전 좌표로 다시 받으므로 화면이 그대로다.
+      startTransition(() => {
+        router.refresh()
+      })
+
+      // 같은 자리에 머물러 좌표가 그대로인 경우에도 기온은 다시 받아온다.
+      await queryClient.invalidateQueries({
+        queryKey: ['weather'],
       })
     },
   })
 
-  return mutation
+  return {
+    isPending: mutation.isPending || isRefreshing,
+    error: mutation.error,
+    refresh: () => mutation.mutate(),
+  }
 }
