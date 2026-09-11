@@ -16,6 +16,8 @@ import { WeatherDate } from '../Weather/WeatherDate'
 import { WeatherIcon } from '../Weather/WeatherIcon'
 import { WeatherStaleNotice } from '../Weather/WeatherStaleNotice'
 import { AppErrorBoundary } from './AppErrorBoundary'
+import { WeatherGeolocationNotice } from '../Weather/WeatherGeolocationNotice'
+import { useGeolocationMutation } from '@/hooks/useGeolocation/useGeolocation'
 
 export function AppContainer({
   latitude,
@@ -28,6 +30,7 @@ export function AppContainer({
       longitude,
     })
   )
+  const geolocation = useGeolocationMutation()
   const [shortTermForecast] = weatherData.weather.shortTermForecasts
 
   return (
@@ -46,9 +49,16 @@ export function AppContainer({
             weatherData.geo.region.area3.name,
           ]}
         >
-          <WeatherGeolocationButton />
+          <WeatherGeolocationButton
+            isPending={geolocation.isPending}
+            onRefresh={geolocation.refresh}
+          />
         </WeatherArea>
         <WeatherDate />
+        <WeatherGeolocationNotice
+          isPending={geolocation.isPending}
+          error={geolocation.error}
+        />
         {weatherData.staleAt !== undefined && (
           <WeatherStaleNotice staleAt={weatherData.staleAt} />
         )}
